@@ -1,0 +1,4 @@
+# Dotnet Ignores
+obj
+bin
+appsettings.*.json
