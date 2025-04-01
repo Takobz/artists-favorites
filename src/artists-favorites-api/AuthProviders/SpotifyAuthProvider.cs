@@ -8,7 +8,7 @@ using System.Text.Json;
 
 namespace artists_favorites_api.AuthProviders 
 {
-    interface ISpotifyAuthProvider 
+    public interface ISpotifyAuthProvider 
     {
         Task<BaiscAccessTokenResponse> GetBaiscAccessToken();
     }
