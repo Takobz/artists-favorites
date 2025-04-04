@@ -35,10 +35,11 @@ namespace artists_favorites_api.AuthProviders
                 _httpClient.DefaultRequestHeaders.Clear();
                 _httpClient.DefaultRequestHeaders.Add("Authorization", $"Basic {base64ClientCredentials}");
 
-                var response = await _httpClient.SendAsync(new HttpRequestMessage()
+                var response = await _httpClient.SendAsync(new HttpRequestMessage
                 {
                     Content = accessTokenRequestParams,
-                    RequestUri = new Uri(_spotifyOptions.SpotifyAuthUrl)
+                    RequestUri = new Uri(_spotifyOptions.SpotifyAuthUrl),
+                    Method = HttpMethod.Post
                 });
 
                 if (response.IsSuccessStatusCode)

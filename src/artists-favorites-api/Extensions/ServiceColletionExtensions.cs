@@ -10,14 +10,22 @@ namespace artists_favorites_api.Extensions
     {
         public static IServiceCollection AddSpotifyServices (this IServiceCollection services, IConfiguration configuration)
         {
-            services.Configure<SpotifyOptions>(configuration.GetSection(SpotifyOptions.Section));
-            services.AddTransient<ISpotifyAuthProvider, SpotifyAuthProvider>();
-            services.AddTransient<ISpotifySearchService, SpotifySearchService>();
+            //Delegating Handlers
             services.AddTransient<SpotifyClientCredentialsHandler>();
+            services.AddTransient<LoggingDelegatingHandler>();
+
+            //http clients
             services.AddHttpClient<ISpotifyClient, SpotifyClient>(client => {
                 var options = configuration.GetSection(SpotifyOptions.Section).Get<SpotifyOptions>();
                 client.BaseAddress = new Uri(options!.SpotifyAuthUrl);
-            }).AddHttpMessageHandler<SpotifyClientCredentialsHandler>();
+            })
+            .AddHttpMessageHandler<LoggingDelegatingHandler>()
+            .AddHttpMessageHandler<SpotifyClientCredentialsHandler>();
+
+            //Services
+            services.Configure<SpotifyOptions>(configuration.GetSection(SpotifyOptions.Section));
+            services.AddTransient<ISpotifyAuthProvider, SpotifyAuthProvider>();
+            services.AddTransient<ISpotifySearchService, SpotifySearchService>();
 
             return services;
         }
