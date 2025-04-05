@@ -1,4 +1,5 @@
 using artists_favorites_api.Services;
+using artists_favorites_api.Extensions;
 
 namespace artists_favorites_api.Routes 
 {
@@ -8,9 +9,8 @@ namespace artists_favorites_api.Routes
         {
             routeBuilder.MapGet("v1/search/{artistName}", async (string artistName, ISpotifySearchService spotifySearchService) => {
                 var artistSearchResults = await spotifySearchService.GetArtistsByName(artistName);
-                
                 return artistSearchResults.Any() ? 
-                    Results.Ok(artistSearchResults) : Results.NotFound();
+                    Results.Ok(artistSearchResults.Select(asr => asr.ToSearchArtistResponseDTO())) : Results.NotFound();
             })
             .WithName("SearchArtist")
             .WithOpenApi();

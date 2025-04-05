@@ -1,4 +1,5 @@
 using artists_favorites_api.Models.ClientModels.Spotify;
+using artists_favorites_api.Models.DTOs.Responses;
 using artists_favorites_api.Models.ServiceModels.SpotifyServiceModels.Queries;
 
 namespace artists_favorites_api.Extensions 
@@ -17,6 +18,14 @@ namespace artists_favorites_api.Extensions
                     item.Images.FirstOrDefault()?.ImageUrl ?? string.Empty
                 );
             });
+        }
+
+        public static SearchArtistResponse ToSearchArtistResponseDTO (this SearchArtistResult result)
+        {
+            return new SearchArtistResponse(
+                result.ArtistName,
+                result.ArtistSpotifyUrl,
+                result.ArtistImageUrl);
         }
 
         public static bool SearchFoundNoArtists (this SpotifySearchResponses? searchResponses){
