@@ -7,9 +7,9 @@ namespace artists_favorites_api.Services
         Task<IEnumerable<string>> GetArtistsByName(string artistName);
     }
 
-    public class SpotifySearchService(ISpotifyClient spotifyClient) : ISpotifySearchService 
+    public class SpotifySearchService(ISpotifySearchClient spotifyClient) : ISpotifySearchService 
     {
-        private readonly ISpotifyClient _spotifyClient = spotifyClient;
+        private readonly ISpotifySearchClient _spotifyClient = spotifyClient;
 
         public async Task<IEnumerable<string>> GetArtistsByName(string artistName) 
         {

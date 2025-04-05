@@ -1,20 +1,22 @@
+using artists_favorites_api.Helpers;
+
 namespace artists_favorites_api.Clients.Spotify 
 {
-    public interface ISpotifyClient 
+    public interface ISpotifySearchClient 
     {
         Task<string> GetArtist(string artistName);
     }
 
-    public class SpotifyClient(HttpClient httpClient) : ISpotifyClient 
+    public class SpotifySearchClient(HttpClient httpClient) : ISpotifySearchClient 
     {
-        public const string SpotifyClientClient = "spotify-auth-client";
-
-        //private readonly HttpClient _httpClient = clientFactory.CreateClient(SpotifyClientClient);
-
-        //TODO: move this to SpotifyResourceClient make this a SpotifyAuthClient
         public async Task<string> GetArtist(string artistName)
         {
-            var result = await httpClient.GetAsync("/");
+            var searchQuery = SpotifyV1QueryBuilder.SearchArtist(artistName);
+            var result = await httpClient.GetAsync(searchQuery);
+            if (result.IsSuccessStatusCode)
+            {
+                //var 
+            }
 
             return await Task.FromResult(
                 httpClient.DefaultRequestHeaders.TryGetValues("Authorization", out var x) ?

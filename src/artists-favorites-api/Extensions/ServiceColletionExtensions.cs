@@ -15,9 +15,9 @@ namespace artists_favorites_api.Extensions
             services.AddTransient<LoggingDelegatingHandler>();
 
             //http clients
-            services.AddHttpClient<ISpotifyClient, SpotifyClient>(client => {
+            services.AddHttpClient<ISpotifySearchClient, SpotifySearchClient>(client => {
                 var options = configuration.GetSection(SpotifyOptions.Section).Get<SpotifyOptions>();
-                client.BaseAddress = new Uri(options!.SpotifyAuthUrl);
+                client.BaseAddress = new Uri(options!.SpotifySearchV1Url);
             })
             .AddHttpMessageHandler<LoggingDelegatingHandler>()
             .AddHttpMessageHandler<SpotifyClientCredentialsHandler>();
