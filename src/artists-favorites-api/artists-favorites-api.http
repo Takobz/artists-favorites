@@ -1,6 +1,6 @@
 @artists_favorites_api_HostAddress = http://localhost:5125
 
-GET {{artists_favorites_api_HostAddress}}/weatherforecast/
+GET {{artists_favorites_api_HostAddress}}/v1/search/mf doom
 Accept: application/json
 
 ###

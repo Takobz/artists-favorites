@@ -7,6 +7,11 @@ namespace artists_favorites_api.Models.ClientModels.Spotify
         [property: JsonPropertyName("token_type")] string TokenType,
         [property: JsonPropertyName("expires_in")] int ExpiresIn);
 
+    public record SpotifySearchResponses(
+        [property: JsonPropertyName("artists")] SpotifySearchResponse<SpotifyArtist> ArtistsSearchResponses,
+        [property: JsonPropertyName("tracks")] SpotifySearchResponse<SpotifyTrack> TracksSearchResponses
+    );
+
     public record SpotifySearchResponse<T>(
         [property: JsonPropertyName("href")] string HRef,
         [property: JsonPropertyName("limit")] int Limit,
@@ -25,6 +30,8 @@ namespace artists_favorites_api.Models.ClientModels.Spotify
         [property: JsonPropertyName("name")] string ArtistName,
         [property: JsonPropertyName("popularity")] int ArtistPopularity
     ) : SpotifyEntity();
+
+    public record SpotifyTrack () : SpotifyEntity;
 
     public record SpotifyExternalUrls(
         [property: JsonPropertyName("spotify")] string SpotifyUrl);

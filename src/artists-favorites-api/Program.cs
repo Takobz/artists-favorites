@@ -20,6 +20,6 @@ else
     app.UseHttpsRedirection();
 }
 
-app.MapSpotifyRoutes();
+app.MapSpotifyV1Routes();
 
 app.Run();

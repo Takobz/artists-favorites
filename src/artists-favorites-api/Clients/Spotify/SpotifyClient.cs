@@ -1,26 +1,27 @@
+using System.Text.Json;
 using artists_favorites_api.Helpers;
+using artists_favorites_api.Models.ClientModels.Spotify;
 
 namespace artists_favorites_api.Clients.Spotify 
 {
     public interface ISpotifySearchClient 
     {
-        Task<string> GetArtist(string artistName);
+        Task<SpotifySearchResponses?> GetArtist(string artistName);
     }
 
     public class SpotifySearchClient(HttpClient httpClient) : ISpotifySearchClient 
     {
-        public async Task<string> GetArtist(string artistName)
+        public async Task<SpotifySearchResponses?> GetArtist(string artistName)
         {
             var searchQuery = SpotifyV1QueryBuilder.SearchArtist(artistName);
             var result = await httpClient.GetAsync(searchQuery);
-            if (result.IsSuccessStatusCode)
+            if (!result.IsSuccessStatusCode)
             {
-                //var 
+                return default; 
             }
 
-            return await Task.FromResult(
-                httpClient.DefaultRequestHeaders.TryGetValues("Authorization", out var x) ?
-                x.First() : await result.Content.ReadAsStringAsync());
+            return await JsonSerializer.DeserializeAsync<SpotifySearchResponses>(
+                await result.Content.ReadAsStreamAsync());
         }
     }
 }

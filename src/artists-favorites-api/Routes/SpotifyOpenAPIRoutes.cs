@@ -4,11 +4,13 @@ namespace artists_favorites_api.Routes
 {
     public static class SpotifyOpenAPIRoutes 
     {
-        public static IEndpointRouteBuilder MapSpotifyRoutes(this IEndpointRouteBuilder routeBuilder) {
-
-            routeBuilder.MapGet("/search/{artistName}", async (string artistName, ISpotifySearchService spotifySearchService) => {
-                var token = await spotifySearchService.GetArtistsByName(artistName);
-                Results.Ok(token);
+        public static IEndpointRouteBuilder MapSpotifyV1Routes(this IEndpointRouteBuilder routeBuilder) 
+        {
+            routeBuilder.MapGet("v1/search/{artistName}", async (string artistName, ISpotifySearchService spotifySearchService) => {
+                var artistSearchResults = await spotifySearchService.GetArtistsByName(artistName);
+                
+                return artistSearchResults.Any() ? 
+                    Results.Ok(artistSearchResults) : Results.NotFound();
             })
             .WithName("SearchArtist")
             .WithOpenApi();
