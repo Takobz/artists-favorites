@@ -1,11 +1,3 @@
-# Dotnet Ignores
-obj
-bin
-appsettings.*.json
-
-# NPM
-package-lock.json
-
 # Logs
 logs
 *.log
