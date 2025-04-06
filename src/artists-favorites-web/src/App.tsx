@@ -1,35 +1,48 @@
-import { useState } from 'react'
-import reactLogo from './assets/react.svg'
-import viteLogo from '/vite.svg'
+import { useEffect, useState } from 'react'
+import { ArtistsFavoritesApiService } from './services/ArtistsFavoritesApiService'
+import { SearchArtistResponse } from './models/DTOs/ArtistsFavoritesApi/Responses/SearchArtistResponse'
+import { ErrorModel } from './models/ScreenModels/ErrorModel'
 import './App.css'
 
 function App() {
-  const [count, setCount] = useState(0)
+  const [artistSearchResults, setArtistSearchResults] = useState<SearchArtistResponse[]>([])
+
+  useEffect(() => {
+    const getArtist = async () => {
+      var response = await new ArtistsFavoritesApiService().searchArtistByName('mf doom');
+      if (!response) {
+        //TODO: some generic error displaying stuff!!
+        return;
+      }
+
+      if (response instanceof ErrorModel) {
+        // TODO: show error that happened
+      }
+      else {
+        setArtistSearchResults(response);
+      }
+    };
+
+    getArtist();
+
+  }, []);
 
   return (
     <>
-      <div>
-        <a href="https://vite.dev" target="_blank">
-          <img src={viteLogo} className="logo" alt="Vite logo" />
-        </a>
-        <a href="https://react.dev" target="_blank">
-          <img src={reactLogo} className="logo react" alt="React logo" />
-        </a>
-      </div>
-      <h1>Vite + React</h1>
-      <div className="card">
-        <button onClick={() => setCount((count) => count + 1)}>
-          count is {count}
-        </button>
-        <p>
-          Edit <code>src/App.tsx</code> and save to test HMR
-        </p>
-      </div>
-      <p className="read-the-docs">
-        Click on the Vite and React logos to learn more
-      </p>
+      <ul>
+        {
+          artistSearchResults.map((artist, index) => {
+            return (
+              <li key={index} style={{ margin: 10 }}>
+                <img src={artist.imageUrl}/>
+                <h3>Name: </h3> <span><a href={artist.spotifyUrl}>{artist.name}</a></span>
+              </li>
+            )
+          })
+        }
+      </ul>
     </>
-  )
+  );
 }
 
 export default App
