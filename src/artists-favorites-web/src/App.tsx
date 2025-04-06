@@ -3,6 +3,7 @@ import { ArtistsFavoritesApiService } from './services/ArtistsFavoritesApiServic
 import { SearchArtistResponse } from './models/DTOs/ArtistsFavoritesApi/Responses/SearchArtistResponse'
 import { ErrorModel } from './models/ScreenModels/ErrorModel'
 import './App.css'
+import ArtistsList from './components/artists/ArtistsList'
 
 function App() {
   const [artistSearchResults, setArtistSearchResults] = useState<SearchArtistResponse[]>([])
@@ -29,18 +30,7 @@ function App() {
 
   return (
     <>
-      <ul>
-        {
-          artistSearchResults.map((artist, index) => {
-            return (
-              <li key={index} style={{ margin: 10 }}>
-                <img src={artist.imageUrl}/>
-                <h3>Name: </h3> <span><a href={artist.spotifyUrl}>{artist.name}</a></span>
-              </li>
-            )
-          })
-        }
-      </ul>
+      <ArtistsList artists={artistSearchResults}/>
     </>
   );
 }

@@ -15,7 +15,8 @@ namespace artists_favorites_api.Extensions
                 return new SearchArtistResult(
                     item.ArtistName,
                     item.ExternalUrls.SpotifyUrl,
-                    item.Images.FirstOrDefault()?.ImageUrl ?? string.Empty
+                    item.Images.FirstOrDefault()?.ImageUrl ?? string.Empty,
+                    item.ArtistPopularity
                 );
             });
         }
@@ -25,7 +26,8 @@ namespace artists_favorites_api.Extensions
             return new SearchArtistResponse(
                 result.ArtistName,
                 result.ArtistSpotifyUrl,
-                result.ArtistImageUrl);
+                result.ArtistImageUrl,
+                result.ArtistPopularity);
         }
 
         public static bool SearchFoundNoArtists (this SpotifySearchResponses? searchResponses){
