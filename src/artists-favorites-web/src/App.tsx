@@ -4,32 +4,19 @@ import { SearchArtistResponse } from './models/DTOs/ArtistsFavoritesApi/Response
 import { ErrorModel } from './models/ScreenModels/ErrorModel'
 import './App.css'
 import ArtistsList from './components/artists/ArtistsList'
+import SearchArtist from './components/search/SearchArtist'
 
 function App() {
   const [artistSearchResults, setArtistSearchResults] = useState<SearchArtistResponse[]>([])
+  const [artistName, setArtistName] = useState<string>('');
 
-  useEffect(() => {
-    const getArtist = async () => {
-      var response = await new ArtistsFavoritesApiService().searchArtistByName('mf doom');
-      if (!response) {
-        //TODO: some generic error displaying stuff!!
-        return;
-      }
-
-      if (response instanceof ErrorModel) {
-        // TODO: show error that happened
-      }
-      else {
-        setArtistSearchResults(response);
-      }
-    };
-
-    getArtist();
-
-  }, []);
+  const onSearchDataReturned = (searchResponse: SearchArtistResponse[]) => {
+    setArtistSearchResults(searchResponse);
+  }
 
   return (
     <>
+      <SearchArtist onSearchDataReturned={onSearchDataReturned} />
       <ArtistsList artists={artistSearchResults}/>
     </>
   );
