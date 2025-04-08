@@ -9,8 +9,8 @@ interface ArtistsListProps {
 const ArtistsList = (props: ArtistsListProps) => {
     return (
         <>
-            <Box sx={{ width: 500, minWidth: { xs: '90%', sm: 500 } }}>
-                <Stack spacing={1}>
+            <Box sx={{ display: 'flex', alignContent: 'center', width: 500, minWidth: { xs: '90%', sm: 500 } }}>
+                <Stack sx={{  display: 'flex', alignContent: 'center' }} spacing={1}>
                     {props.artists.length ? 
                         props.artists.map((artist, index) => 
                             (<ArtistCard key={index} artist={artist}/>)) 

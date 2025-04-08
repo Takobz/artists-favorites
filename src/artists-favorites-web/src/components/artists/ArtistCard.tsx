@@ -14,6 +14,11 @@ interface IArtistCardProps {
 }
 
 const ArtistCard = (props: IArtistCardProps) => {
+
+    const handleMakePlayListClick = () => {
+        alert('This will initiate an OAuth Auth Code flow');
+    }
+
     return (
         <Card sx={{ maxWidth: 345, background: '#4d545e' }}>
             <CardMedia 
@@ -30,8 +35,9 @@ const ArtistCard = (props: IArtistCardProps) => {
                 </Typography>
             </CardContent>
             <CardActions>
+                {/*TODO Add nice icon to button ?*/}
                 <Button size='small' href={ props.artist.spotifyUrl }>Artist Spotify Page</Button>
-                <Button size='small'>Make A Fave Playlist</Button> {/*TODO Add nice icon to button ?*/}
+                <Button size='small' onClick={handleMakePlayListClick}>Make A Fave Playlist</Button>
             </CardActions>
         </Card>
     );

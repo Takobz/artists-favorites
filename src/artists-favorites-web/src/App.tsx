@@ -1,24 +1,24 @@
-import { useEffect, useState } from 'react'
-import { ArtistsFavoritesApiService } from './services/ArtistsFavoritesApiService'
+import { useState } from 'react'
 import { SearchArtistResponse } from './models/DTOs/ArtistsFavoritesApi/Responses/SearchArtistResponse'
-import { ErrorModel } from './models/ScreenModels/ErrorModel'
 import './App.css'
 import ArtistsList from './components/artists/ArtistsList'
 import SearchArtist from './components/search/SearchArtist'
+import { Box, Stack } from '@mui/material'
 
 function App() {
-  const [artistSearchResults, setArtistSearchResults] = useState<SearchArtistResponse[]>([])
-  const [artistName, setArtistName] = useState<string>('');
+  const [artistSearchResults, setArtistSearchResults] = useState<SearchArtistResponse[]>([]);
 
   const onSearchDataReturned = (searchResponse: SearchArtistResponse[]) => {
     setArtistSearchResults(searchResponse);
   }
 
   return (
-    <>
-      <SearchArtist onSearchDataReturned={onSearchDataReturned} />
-      <ArtistsList artists={artistSearchResults}/>
-    </>
+    <Box>
+      <Stack>
+        <SearchArtist onSearchDataReturned={onSearchDataReturned} />
+        <ArtistsList artists={artistSearchResults}/>
+      </Stack>
+    </Box>
   );
 }
 
