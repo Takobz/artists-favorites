@@ -1,5 +1,7 @@
 using artists_favorites_api.Services;
 using artists_favorites_api.Extensions;
+using artists_favorites_api.AuthProviders;
+using artists_favorites_api.Constants;
 
 namespace artists_favorites_api.Routes 
 {
@@ -13,6 +15,18 @@ namespace artists_favorites_api.Routes
                     Results.Ok(artistSearchResults.Select(asr => asr.ToSearchArtistResponseDTO())) : Results.NotFound();
             })
             .WithName("SearchArtist")
+            .WithOpenApi();
+
+            return routeBuilder;
+        }
+
+        public static IEndpointRouteBuilder MapSpotifyAuthRoutes(this IEndpointRouteBuilder routeBuilder)
+        {
+            routeBuilder.MapGet("initiate-authorize", async (ISpotifyAuthProvider authProvider) => {
+                var response = await authProvider.InitiateAuthorizationRequest(SpotifyUserAuthorizationScopes.UserLibraryRead);
+                Results.Ok(response);
+            })
+            .WithName("InitiateAuthorize")
             .WithOpenApi();
 
             return routeBuilder;

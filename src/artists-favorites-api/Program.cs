@@ -30,5 +30,6 @@ else
 }
 
 app.MapSpotifyV1Routes();
+app.MapSpotifyAuthRoutes();
 
 app.Run();

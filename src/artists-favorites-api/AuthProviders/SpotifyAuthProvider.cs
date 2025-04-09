@@ -5,12 +5,24 @@ using Microsoft.Extensions.Options;
 using artists_favorites_api.Constants;
 using System.Text;
 using System.Text.Json;
+using artists_favorites_api.Helpers;
 
 namespace artists_favorites_api.AuthProviders 
 {
     public interface ISpotifyAuthProvider 
     {
+        /// <summary>
+        /// Get Application level scoped access token
+        /// </summary>
+        /// <returns>Access Token that can be used by application, identifies the application</returns>
         Task<BaiscAccessTokenResponse> GetBaiscAccessToken();
+
+        /// <summary>
+        /// Initiates OAuth2.0 Authorization Code flow with Spotify Auth Server
+        /// </summary>
+        /// <param name="scope">Scope that the application is requesting on behalf of the user</param>
+        /// <returns>Redirect URI that will be passed to the UI.</returns>
+        Task<string> InitiateAuthorizationRequest(string scope);
     }
 
     public class SpotifyAuthProvider(
@@ -28,8 +40,7 @@ namespace artists_favorites_api.AuthProviders
         {
             if (!_memoryCache.TryGetValue(_spotifyAccessToken, out BaiscAccessTokenResponse? accessToken))
             {
-                var byteClientCredentials = Encoding.UTF8.GetBytes($"{_spotifyOptions.ClientId}:{_spotifyOptions.ClientSecret}");
-                var base64ClientCredentials = Convert.ToBase64String(byteClientCredentials);
+                var base64ClientCredentials = GenerateBase64ClientCredentials();
                 var accessTokenRequestParams = new FormUrlEncodedContent(new Dictionary<string, string> { { "grant_type", "client_credentials" } });
 
                 _httpClient.DefaultRequestHeaders.Clear();
@@ -38,7 +49,7 @@ namespace artists_favorites_api.AuthProviders
                 var response = await _httpClient.SendAsync(new HttpRequestMessage
                 {
                     Content = accessTokenRequestParams,
-                    RequestUri = new Uri(_spotifyOptions.SpotifyAuthUrl),
+                    RequestUri = new Uri($"{_spotifyOptions.SpotifyAuthUrl}/token"),
                     Method = HttpMethod.Post
                 });
 
@@ -53,6 +64,34 @@ namespace artists_favorites_api.AuthProviders
             if (accessToken == null) throw new Exception("Can't continue without the access token");
 
             return accessToken;
+        }
+
+        public async Task<string> InitiateAuthorizationRequest(string scope)
+        {
+            var request = new AuthorizeUserRequest(
+                ClientId: _spotifyOptions.ClientId,
+                RedirectUri: _spotifyOptions.RedirectUri,
+                State: Guid.NewGuid().ToString(),
+                Scope: scope);
+
+            var response = await _httpClient.SendAsync(new HttpRequestMessage
+            {
+                RequestUri = new Uri($"{_spotifyOptions.SpotifyAuthUrl}/authorize?{request.ToAuthorizeQueryParams()}"),
+                Method = HttpMethod.Get
+            });
+
+            if (response.IsSuccessStatusCode)
+            {
+                return await response.Content.ReadAsStringAsync();
+            }
+
+            throw new Exception("Failed To Initiate authorize request");
+        }
+
+        private string GenerateBase64ClientCredentials()
+        {
+            var byteClientCredentials = Encoding.UTF8.GetBytes($"{_spotifyOptions.ClientId}:{_spotifyOptions.ClientSecret}");
+            return Convert.ToBase64String(byteClientCredentials);
         }
     }
 }
