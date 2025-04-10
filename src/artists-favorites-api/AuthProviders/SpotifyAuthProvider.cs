@@ -49,7 +49,7 @@ namespace artists_favorites_api.AuthProviders
                 var response = await _httpClient.SendAsync(new HttpRequestMessage
                 {
                     Content = accessTokenRequestParams,
-                    RequestUri = new Uri($"{_spotifyOptions.SpotifyAuthUrl}/token"),
+                    RequestUri = new Uri($"{_spotifyOptions.SpotifyAuthUrl}/api/token"),
                     Method = HttpMethod.Post
                 });
 
@@ -82,7 +82,7 @@ namespace artists_favorites_api.AuthProviders
 
             if (response.IsSuccessStatusCode)
             {
-                return await response.Content.ReadAsStringAsync();
+                return response?.Headers?.Location?.AbsoluteUri ?? await response?.Content?.ReadAsStringAsync();
             }
 
             throw new Exception("Failed To Initiate authorize request");

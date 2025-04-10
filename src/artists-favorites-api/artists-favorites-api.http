@@ -5,3 +5,5 @@ GET {{artists_favorites_api_HostAddress}}/v1/search/{{artist_name}}
 Accept: application/json
 
 ###
+
+GET {{artists_favorites_api_HostAddress}}/initiate-authorize
