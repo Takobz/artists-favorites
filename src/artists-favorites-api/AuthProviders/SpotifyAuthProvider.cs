@@ -68,7 +68,6 @@ namespace artists_favorites_api.AuthProviders
 
         public async Task<string> InitiateAuthorizationRequest(string scope)
         {
-            //diff
             var request = new AuthorizeUserRequest(
                 ClientId: _spotifyOptions.ClientId,
                 RedirectUri: _spotifyOptions.RedirectUri,
