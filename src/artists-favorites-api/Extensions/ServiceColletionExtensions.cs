@@ -22,9 +22,15 @@ namespace artists_favorites_api.Extensions
             .AddHttpMessageHandler<LoggingDelegatingHandler>()
             .AddHttpMessageHandler<SpotifyClientCredentialsHandler>();
 
+            services.AddHttpClient<ISpotifyAuthProvider, SpotifyAuthProvider>()
+                .ConfigurePrimaryHttpMessageHandler(serviceProvider => {
+                    return new HttpClientHandler {
+                        AllowAutoRedirect = false
+                    };
+                });
+
             //Services
             services.Configure<SpotifyOptions>(configuration.GetSection(SpotifyOptions.Section));
-            services.AddTransient<ISpotifyAuthProvider, SpotifyAuthProvider>();
             services.AddTransient<ISpotifySearchService, SpotifySearchService>();
 
             return services;

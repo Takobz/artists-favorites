@@ -34,7 +34,8 @@ namespace artists_favorites_api.Helpers
                 $"response_type={request.ResponseType}&" +
                 $"scope={request.Scope}&" +
                 $"redirect_uri={request.RedirectUri}&" +
-                $"state={request.State}";
+                $"state={request.State}&" +
+                $"show_dialog={request.ShowDialog}";
         }
     }
 }

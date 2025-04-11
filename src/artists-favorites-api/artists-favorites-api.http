@@ -1,9 +1,16 @@
 @artists_favorites_api_HostAddress = http://localhost:5125
 @artist_name = mf doom
 
+
+# @name getArtistByName
 GET {{artists_favorites_api_HostAddress}}/v1/search/{{artist_name}}
 Accept: application/json
 
 ###
 
+# @name initiateAuthorize
 GET {{artists_favorites_api_HostAddress}}/initiate-authorize
+
+###
+
+@spotifyAuthorizeUrl = {{ initiateAuthorize.response.body.$.spotifyAuthorizeUrl }}

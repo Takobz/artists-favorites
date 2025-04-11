@@ -6,6 +6,8 @@ using artists_favorites_api.Constants;
 using System.Text;
 using System.Text.Json;
 using artists_favorites_api.Helpers;
+using System.Net;
+using artists_favorites_api.Models.DTOs.Responses;
 
 namespace artists_favorites_api.AuthProviders 
 {
@@ -22,17 +24,17 @@ namespace artists_favorites_api.AuthProviders
         /// </summary>
         /// <param name="scope">Scope that the application is requesting on behalf of the user</param>
         /// <returns>Redirect URI that will be passed to the UI.</returns>
-        Task<string> InitiateAuthorizationRequest(string scope);
+        Task<InitiateAuthorizeResponse> InitiateAuthorizationRequest(string scope);
     }
 
     public class SpotifyAuthProvider(
         IOptions<SpotifyOptions> spotifyOptions,
         IMemoryCache memoryCache,
-        IHttpClientFactory httpClientFactory) : ISpotifyAuthProvider 
+        HttpClient httpClient) : ISpotifyAuthProvider 
     {
         private readonly SpotifyOptions _spotifyOptions = spotifyOptions.Value;
         private readonly IMemoryCache _memoryCache = memoryCache;
-        private readonly HttpClient _httpClient = httpClientFactory.CreateClient();
+        private readonly HttpClient _httpClient = httpClient;
 
         private const string _spotifyAccessToken = ApplicationConstants.SpotifyBasicAccessTokenCacheKey;
 
@@ -66,7 +68,7 @@ namespace artists_favorites_api.AuthProviders
             return accessToken;
         }
 
-        public async Task<string> InitiateAuthorizationRequest(string scope)
+        public async Task<InitiateAuthorizeResponse> InitiateAuthorizationRequest(string scope)
         {
             var request = new AuthorizeUserRequest(
                 ClientId: _spotifyOptions.ClientId,
@@ -80,9 +82,11 @@ namespace artists_favorites_api.AuthProviders
                 Method = HttpMethod.Get
             });
 
-            if (response.IsSuccessStatusCode)
+            if (response.StatusCode == HttpStatusCode.RedirectMethod ||
+                response.StatusCode == HttpStatusCode.Redirect)
             {
-                return response?.Headers?.Location?.AbsoluteUri ?? await response?.Content?.ReadAsStringAsync();
+                var spotifyAuthorizeUrl = response?.Headers?.Location?.AbsoluteUri ?? string.Empty;
+                return new InitiateAuthorizeResponse(spotifyAuthorizeUrl);
             }
 
             throw new Exception("Failed To Initiate authorize request");

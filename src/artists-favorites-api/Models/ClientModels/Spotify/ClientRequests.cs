@@ -8,7 +8,7 @@ namespace  artists_favorites_api.Models.ClientModels.Spotify
         [property: JsonPropertyName("redirect_uri")] string RedirectUri,
         [property: JsonPropertyName("state")] string State,
         [property: JsonPropertyName("scope")] string Scope,
-        [property: JsonPropertyName("show_dialog")] bool ShowDialog = false,
+        [property: JsonPropertyName("show_dialog")] bool ShowDialog = true,
         [property: JsonPropertyName("response_type")] string ResponseType = SpotifyUserAuthorizationCodes.Code
     );
 }

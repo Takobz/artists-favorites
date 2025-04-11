@@ -24,9 +24,18 @@ namespace artists_favorites_api.Routes
         {
             routeBuilder.MapGet("initiate-authorize", async (ISpotifyAuthProvider authProvider) => {
                 var response = await authProvider.InitiateAuthorizationRequest(SpotifyUserAuthorizationScopes.UserLibraryRead);
-                Results.Ok(response);
+                return Results.Ok(response);
             })
             .WithName("InitiateAuthorize")
+            .WithOpenApi();
+
+            //This should be a Front end endpoint and present a code here for the access token
+            routeBuilder.MapGet("/spotify-user-token", (HttpRequest request) => {
+                //TODO: get code and get access token for user.
+                var code = request.Path.Value;
+                return Results.Ok(code);
+            })
+            .WithName("SpotifyCallback")
             .WithOpenApi();
 
             return routeBuilder;
