@@ -1,29 +1,52 @@
 import axios from "axios";
 import { SearchArtistResponse } from "../models/DTOs/ArtistsFavoritesApi/Responses/SearchArtistResponse"
-import { ErrorModel } from "../models/ScreenModels/ErrorModel";
+import { GetUserTokenResponse } from "../models/DTOs/ArtistsFavoritesApi/Responses/GetUserTokenResponse";
+import { GetUserTokenRequest } from "../models/DTOs/ArtistsFavoritesApi/Requests/GetUserTokenRequest";
+//import { ErrorModel } from "../models/ScreenModels/ErrorModel";
 
 const baseUrl = import.meta.env.VITE_ArtistsFavoritesApi_BASE_URL;
 
 interface IArtistsFavoritesApiService {
-    searchArtistByName(name: string) : Promise<SearchArtistResponse[]>
+    searchArtistByName(name: string) : Promise<SearchArtistResponse[]>;
+    getUserAccessToken(code: string, state: string) : Promise<GetUserTokenResponse>;
 }
 
 export class ArtistsFavoritesApiService implements IArtistsFavoritesApiService {
     async searchArtistByName(name: string): Promise<SearchArtistResponse[]> {
-        var artistResult : SearchArtistResponse[] = [];
+        let artistResult : SearchArtistResponse[] = [];
         await axios.get<SearchArtistResponse[]>(`${baseUrl}/v1/search/${name}`).then(response => {
             if (response.status && response.status === 200){
                 artistResult = response.data;
             }
         }).catch(err => {
             console.log(err); //TODO: use better logger service
-            const error : ErrorModel = {
-                displayMessage: `Error Getting Artist ${name}`,
-                errorCode: "APICallError"
-            }
+            // const error : ErrorModel = {
+            //     displayMessage: `Error Getting Artist ${name}`,
+            //     errorCode: "APICallError"
+            // }
             //return error;
         });
 
         return artistResult;
+    }
+
+    async getUserAccessToken(code: string, state: string): Promise<GetUserTokenResponse> {
+        const request : GetUserTokenRequest = {
+            authorizationCode: code,
+            state: state 
+        };
+
+        const response = await axios.post<GetUserTokenResponse>(`${baseUrl}/spotify-user-token`, request).then(response => {
+            if (!response.status) throw Error();
+
+            if (response.status === 200){
+                return response.data;
+            }
+            //TODO: handle 4xx's errors.
+
+            throw Error();
+        })
+
+        return response;
     }
 }

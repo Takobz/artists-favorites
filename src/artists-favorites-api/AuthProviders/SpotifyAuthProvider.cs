@@ -25,6 +25,13 @@ namespace artists_favorites_api.AuthProviders
         /// <param name="scope">Scope that the application is requesting on behalf of the user</param>
         /// <returns>Redirect URI that will be passed to the UI.</returns>
         Task<InitiateAuthorizeResponse> InitiateAuthorizationRequest(string scope);
+        
+        /// <summary>
+        /// Get the Access token in exchange of the OAuth2.0 authorization code recieved. 
+        /// </summary>
+        /// <param name="authorizationCode">authorization code recieved after user authorization</param>
+        /// <returns>Access token to access user resoucres</returns>
+        Task<string> GetAuthorizationCodeAccessToken(string authorizationCode);
     }
 
     public class SpotifyAuthProvider(
@@ -38,6 +45,7 @@ namespace artists_favorites_api.AuthProviders
 
         private const string _spotifyAccessToken = ApplicationConstants.SpotifyBasicAccessTokenCacheKey;
 
+        //TODO: Move BaseUri sets to a delegating handler.
         public async Task<BaiscAccessTokenResponse> GetBaiscAccessToken()
         {
             if (!_memoryCache.TryGetValue(_spotifyAccessToken, out BaiscAccessTokenResponse? accessToken))
@@ -90,6 +98,29 @@ namespace artists_favorites_api.AuthProviders
             }
 
             throw new Exception("Failed To Initiate authorize request");
+        }
+
+        public async Task<string> GetAuthorizationCodeAccessToken(string authorizationCode)
+        {
+            var base64ClientCredentials = GenerateBase64ClientCredentials();
+            var request = new FormUrlEncodedContent(new Dictionary<string, string> 
+            {
+                { "grant_type", "authorization_code" },
+                { "code", authorizationCode },
+                { "redirect_uri", _spotifyOptions.RedirectUri }
+            });
+
+            _httpClient.DefaultRequestHeaders.Add("Authorization", $"Basic {base64ClientCredentials}");
+            var response = await _httpClient.SendAsync(new HttpRequestMessage 
+            {
+                RequestUri = new Uri($"{_spotifyOptions.SpotifyAuthUrl}/api/token"),
+                Method = HttpMethod.Post,
+                Content = request
+            });
+
+            if (response.IsSuccessStatusCode) return await response.Content.ReadAsStringAsync();
+
+            throw new Exception($"Failed to get access token for authorization code: {authorizationCode}");
         }
 
         private string GenerateBase64ClientCredentials()

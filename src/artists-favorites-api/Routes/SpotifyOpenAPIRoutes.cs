@@ -2,6 +2,8 @@ using artists_favorites_api.Services;
 using artists_favorites_api.Extensions;
 using artists_favorites_api.AuthProviders;
 using artists_favorites_api.Constants;
+using artists_favorites_api.Models.DTOs.Requests;
+using artists_favorites_api.Models.DTOs.Responses;
 
 namespace artists_favorites_api.Routes 
 {
@@ -29,13 +31,13 @@ namespace artists_favorites_api.Routes
             .WithName("InitiateAuthorize")
             .WithOpenApi();
 
-            //This should be a Front end endpoint and present a code here for the access token
-            routeBuilder.MapGet("/spotify-user-token", (HttpRequest request) => {
-                //TODO: get code and get access token for user.
-                var code = request.Path.Value;
-                return Results.Ok(code);
+            routeBuilder.MapGet("/spotify-user-token", async (
+                GetUserTokenRequest body,
+                ISpotifyAuthProvider authProvider) => {
+                var accessToken = await authProvider.GetAuthorizationCodeAccessToken(body.Code); 
+                return Results.Ok(new GetUserTokenResponse(accessToken));
             })
-            .WithName("SpotifyCallback")
+            .WithName("SpotifyAccessToken")
             .WithOpenApi();
 
             return routeBuilder;
