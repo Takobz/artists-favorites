@@ -31,7 +31,7 @@ namespace artists_favorites_api.Routes
             .WithName("InitiateAuthorize")
             .WithOpenApi();
 
-            routeBuilder.MapGet("/spotify-user-token", async (
+            routeBuilder.MapPost("/spotify-user-token", async (
                 GetUserTokenRequest body,
                 ISpotifyAuthProvider authProvider) => {
                 var accessToken = await authProvider.GetAuthorizationCodeAccessToken(body.Code); 

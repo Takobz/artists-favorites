@@ -1,10 +1,12 @@
 import { useContext, useEffect, useState } from "react";
 import { ArtistsFavoritesApiService } from "../../services/ArtistsFavoritesApiService";
 import { AuthContext } from "../../contexts/AuthContext";
+import { useNavigate } from "react-router-dom";
 
 const Callback = () => {
     const [isLoading, setIsLoading] = useState<boolean>(true);
-    const authContext = useContext(AuthContext)
+    const authContext = useContext(AuthContext);
+    const navigate = useNavigate();
     if (!authContext) throw Error("Auth Context can't be null");
 
     useEffect(() => {
@@ -20,7 +22,8 @@ const Callback = () => {
                     setIsLoading(false);
                     authContext.setAccessToken(response.accessToken);
                     authContext.setRefreshToken(response.refreshToken);
-                    return response;
+                    authContext.setState(state);
+                    navigate("/playlist/create");
                 }
             });
         }
@@ -29,13 +32,13 @@ const Callback = () => {
 
         //empty clean up function
         return () => {}
-    }, [authContext]);
+    });
 
     return (
         <>
         {
             isLoading ? <>Some Loading Modal</> 
-                : <>Take user to playlists screen</>
+                : <>Creating Playlist...</>
         }
         </>
     );

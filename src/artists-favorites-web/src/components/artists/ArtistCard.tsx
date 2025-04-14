@@ -1,3 +1,4 @@
+import { useState } from 'react';
 import { SearchArtistResponse } from '../../models/DTOs/ArtistsFavoritesApi/Responses/SearchArtistResponse'
 import 
 { 
@@ -8,19 +9,22 @@ import
     CardActions,
     Button
 } from '@mui/material';
+import MakePlaylistModal from '../playlist/MakePlaylistModal';
 
 interface IArtistCardProps {
     artist: SearchArtistResponse
 }
 
 const ArtistCard = (props: IArtistCardProps) => {
+    const [isConfirmModalOpen, setIsConfirmModalOpen] = useState<boolean>(false);
 
     const handleMakePlayListClick = () => {
-        alert('This will initiate an OAuth Auth Code flow');
+        setIsConfirmModalOpen(true);
     }
 
     return (
-        <Card sx={{ maxWidth: 345, background: '#4d545e' }}>
+        <>
+            <Card sx={{ maxWidth: 345, background: '#4d545e' }}>
             <CardMedia 
                 sx={{ height: 240 }}
                 image={ props.artist.imageUrl === '' ?
@@ -39,7 +43,14 @@ const ArtistCard = (props: IArtistCardProps) => {
                 <Button size='small' href={ props.artist.spotifyUrl }>Artist Spotify Page</Button>
                 <Button size='small' onClick={handleMakePlayListClick}>Make A Fave Playlist</Button>
             </CardActions>
-        </Card>
+            </Card>
+
+            <MakePlaylistModal
+                artistName={props.artist.name} 
+                isOpen={isConfirmModalOpen}
+                onModalClose={() => setIsConfirmModalOpen(false)}
+                />
+        </>
     );
 };
 

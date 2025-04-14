@@ -27,6 +27,7 @@ const SearchArtist = (props: SearchProps) => {
             .then(response => {
                 if (!response) {
                     //TODO: some generic error displaying stuff!!
+                    console.log(response);
                 }
                 else {
                     props.onSearchDataReturned(response);

@@ -9,10 +9,13 @@ The interface will expose the state and functions to change, thus changing conte
 export const AuthContextProvider = ({ children }: React.PropsWithChildren) => {
     const [accessToken, setAccessToken] = useState<string>("");
     const [refreshToken, setRefreshToken] = useState<string>("");
+    const [state, setState] = useState<string>("");
 
     const defaultAuthContextState : AuthContextProviderState = {
         accessToken: accessToken,
         refreshToken: refreshToken,
+        state: state,
+        setState: setState,
         setAccessToken: setAccessToken,
         setRefreshToken: setRefreshToken
     };
