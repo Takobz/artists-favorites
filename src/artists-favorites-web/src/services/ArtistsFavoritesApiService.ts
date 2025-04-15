@@ -2,12 +2,14 @@ import axios from "axios";
 import { SearchArtistResponse } from "../models/DTOs/ArtistsFavoritesApi/Responses/SearchArtistResponse"
 import { GetUserTokenResponse } from "../models/DTOs/ArtistsFavoritesApi/Responses/GetUserTokenResponse";
 import { GetUserTokenRequest } from "../models/DTOs/ArtistsFavoritesApi/Requests/GetUserTokenRequest";
+import { InitiateAuthorizeResponse } from '../models/DTOs/ArtistsFavoritesApi/Responses/InitiateAuthorizeResponse'
 //import { ErrorModel } from "../models/ScreenModels/ErrorModel";
 
 const baseUrl = import.meta.env.VITE_ArtistsFavoritesApi_BASE_URL;
 
 interface IArtistsFavoritesApiService {
     searchArtistByName(name: string) : Promise<SearchArtistResponse[]>;
+    initiateAuthorizeRequest() : Promise<InitiateAuthorizeResponse>;
     getUserAccessToken(code: string, state: string) : Promise<GetUserTokenResponse>;
 }
 
@@ -28,6 +30,18 @@ export class ArtistsFavoritesApiService implements IArtistsFavoritesApiService {
         });
 
         return artistResult;
+    }
+
+    async initiateAuthorizeRequest(): Promise<InitiateAuthorizeResponse> {
+        await axios.get<InitiateAuthorizeResponse>(`${baseUrl}/initiate-authorize`).then(response => {
+            if (response.status && response.status === 200){
+                return response.data as InitiateAuthorizeResponse;
+            }
+        }).catch(err => {
+            console.log(err);
+        });
+
+        throw Error("Failed to initiate the authorize request");
     }
 
     async getUserAccessToken(code: string, state: string): Promise<GetUserTokenResponse> {

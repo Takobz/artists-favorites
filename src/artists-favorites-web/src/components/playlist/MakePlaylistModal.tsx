@@ -1,6 +1,7 @@
 import { useState } from "react";
 import { Modal, Box, Button } from '@mui/material'
 import CircularProgress from '@mui/material/CircularProgress';
+import { ArtistsFavoritesApiService } from "../../services/ArtistsFavoritesApiService";
 
 const style = {
     position: 'absolute',
@@ -28,8 +29,11 @@ const MakePlaylistModal = (props: MakePlaylistModalProps) => {
     const handleConfirm = () => {
         setIsAuthPending(true);
 
-        //this will prompt OAuth2.0 for user to authorize the creation of consent.
-        //TODO to call backend to initiate then we waiting...
+        new ArtistsFavoritesApiService().initiateAuthorizeRequest()
+            .then(response => {
+                setIsAuthPending(false);
+                window.location.href = response.spotifyAuthorizeUrl
+            });
     }
   
     return (
