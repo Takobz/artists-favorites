@@ -37,5 +37,15 @@ namespace artists_favorites_api.Extensions
                 searchResponses.ArtistsSearchResponses.Items == null ||
                 !searchResponses.ArtistsSearchResponses.Items.Any();
         }
+
+        public static GetUserTokenResponse ToGetUserTokenResponseDTO(this AuthorizationCodeAccessTokenResponse? response)
+        {
+            if (response == null) throw new Exception("Can't convert a null response");
+
+            return new GetUserTokenResponse(
+                response.AccessToken,
+                response.RefreshToken
+            );
+        }
     }
 }

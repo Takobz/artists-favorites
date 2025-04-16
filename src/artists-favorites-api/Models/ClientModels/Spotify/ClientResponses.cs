@@ -7,6 +7,14 @@ namespace artists_favorites_api.Models.ClientModels.Spotify
         [property: JsonPropertyName("token_type")] string TokenType,
         [property: JsonPropertyName("expires_in")] int ExpiresIn);
 
+    public record AuthorizationCodeAccessTokenResponse(
+        [property: JsonPropertyName("access_token")] string AccessToken,
+        [property: JsonPropertyName("token_type")] string TokenType,
+        [property: JsonPropertyName("expires_in")] int ExpiresIn,
+        [property: JsonPropertyName("refresh_token")] string RefreshToken,
+        [property: JsonPropertyName("scope")] string Scope
+    );
+
     public record SpotifySearchResponses(
         [property: JsonPropertyName("artists")] SpotifySearchResponse<SpotifyArtist> ArtistsSearchResponses,
         [property: JsonPropertyName("tracks")] SpotifySearchResponse<SpotifyTrack> TracksSearchResponses

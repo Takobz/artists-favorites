@@ -36,7 +36,7 @@ const SearchArtist = (props: SearchProps) => {
     }
 
     return (
-        <Box sx={{ alignContent: 'center' }}>
+        <Box sx={{ alignContent: 'center', mb: 2 }}>
             <Stack direction='row' spacing={2}>
                 <TextField 
                     value={insertedValue}

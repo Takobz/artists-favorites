@@ -33,15 +33,13 @@ export class ArtistsFavoritesApiService implements IArtistsFavoritesApiService {
     }
 
     async initiateAuthorizeRequest(): Promise<InitiateAuthorizeResponse> {
-        await axios.get<InitiateAuthorizeResponse>(`${baseUrl}/initiate-authorize`).then(response => {
+        return await axios.get<InitiateAuthorizeResponse>(`${baseUrl}/initiate-authorize`).then(response => {
             if (response.status && response.status === 200){
                 return response.data as InitiateAuthorizeResponse;
             }
-        }).catch(err => {
-            console.log(err);
+            
+            throw Error("Failed to initiate the authorize request");
         });
-
-        throw Error("Failed to initiate the authorize request");
     }
 
     async getUserAccessToken(code: string, state: string): Promise<GetUserTokenResponse> {

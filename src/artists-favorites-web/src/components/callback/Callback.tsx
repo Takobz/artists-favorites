@@ -10,7 +10,7 @@ const Callback = () => {
     if (!authContext) throw Error("Auth Context can't be null");
 
     useEffect(() => {
-        const urlQueryParams = window.location.hash.substring(1);
+        const urlQueryParams = window.location.search;
         const urlParams = new URLSearchParams(urlQueryParams);
         const authorizationCode = urlParams.get("code") ?? '';
         const state = urlParams.get("state") ?? '';

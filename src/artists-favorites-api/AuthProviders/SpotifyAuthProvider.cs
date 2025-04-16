@@ -31,7 +31,7 @@ namespace artists_favorites_api.AuthProviders
         /// </summary>
         /// <param name="authorizationCode">authorization code recieved after user authorization</param>
         /// <returns>Access token to access user resoucres</returns>
-        Task<string> GetAuthorizationCodeAccessToken(string authorizationCode);
+        Task<AuthorizationCodeAccessTokenResponse?> GetAuthorizationCodeAccessToken(string authorizationCode);
     }
 
     public class SpotifyAuthProvider(
@@ -100,7 +100,7 @@ namespace artists_favorites_api.AuthProviders
             throw new Exception("Failed To Initiate authorize request");
         }
 
-        public async Task<string> GetAuthorizationCodeAccessToken(string authorizationCode)
+        public async Task<AuthorizationCodeAccessTokenResponse?> GetAuthorizationCodeAccessToken(string authorizationCode)
         {
             var base64ClientCredentials = GenerateBase64ClientCredentials();
             var request = new FormUrlEncodedContent(new Dictionary<string, string> 
@@ -118,7 +118,12 @@ namespace artists_favorites_api.AuthProviders
                 Content = request
             });
 
-            if (response.IsSuccessStatusCode) return await response.Content.ReadAsStringAsync();
+            if (response.IsSuccessStatusCode) 
+            {
+                return await JsonSerializer.DeserializeAsync<AuthorizationCodeAccessTokenResponse>(
+                    await response.Content.ReadAsStreamAsync()
+                );
+            }
 
             throw new Exception($"Failed to get access token for authorization code: {authorizationCode}");
         }

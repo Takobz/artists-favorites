@@ -3,7 +3,6 @@ using artists_favorites_api.Extensions;
 using artists_favorites_api.AuthProviders;
 using artists_favorites_api.Constants;
 using artists_favorites_api.Models.DTOs.Requests;
-using artists_favorites_api.Models.DTOs.Responses;
 
 namespace artists_favorites_api.Routes 
 {
@@ -34,8 +33,8 @@ namespace artists_favorites_api.Routes
             routeBuilder.MapPost("/spotify-user-token", async (
                 GetUserTokenRequest body,
                 ISpotifyAuthProvider authProvider) => {
-                var accessToken = await authProvider.GetAuthorizationCodeAccessToken(body.Code); 
-                return Results.Ok(new GetUserTokenResponse(accessToken));
+                var accessTokenResponse = await authProvider.GetAuthorizationCodeAccessToken(body.AuthorizationCode); 
+                return Results.Ok(accessTokenResponse.ToGetUserTokenResponseDTO());
             })
             .WithName("SpotifyAccessToken")
             .WithOpenApi();
