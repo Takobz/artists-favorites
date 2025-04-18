@@ -22,9 +22,9 @@ namespace artists_favorites_api.AuthProviders
         /// <summary>
         /// Initiates OAuth2.0 Authorization Code flow with Spotify Auth Server
         /// </summary>
-        /// <param name="scope">Scope that the application is requesting on behalf of the user</param>
+        /// <param name="scopes">Scope that the application is requesting on behalf of the user</param>
         /// <returns>Redirect URI that will be passed to the UI.</returns>
-        Task<InitiateAuthorizeResponse> InitiateAuthorizationRequest(string scope);
+        Task<InitiateAuthorizeResponse> InitiateAuthorizationRequest(string scopes);
         
         /// <summary>
         /// Get the Access token in exchange of the OAuth2.0 authorization code recieved. 
@@ -76,13 +76,13 @@ namespace artists_favorites_api.AuthProviders
             return accessToken;
         }
 
-        public async Task<InitiateAuthorizeResponse> InitiateAuthorizationRequest(string scope)
+        public async Task<InitiateAuthorizeResponse> InitiateAuthorizationRequest(string scopes)
         {
             var request = new AuthorizeUserRequest(
                 ClientId: _spotifyOptions.ClientId,
                 RedirectUri: _spotifyOptions.RedirectUri,
                 State: Guid.NewGuid().ToString(),
-                Scope: scope);
+                Scope: scopes);
 
             var response = await _httpClient.SendAsync(new HttpRequestMessage
             {

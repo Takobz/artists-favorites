@@ -1,5 +1,3 @@
-using artists_favorites_api.Models.ClientModels.Spotify;
-
 namespace artists_favorites_api.Models.ServiceModels.SpotifyServiceModels.Queries 
 {
     public class SearchArtistResult(

@@ -14,24 +14,49 @@ namespace artists_favorites_api.Extensions
             services.AddTransient<SpotifyClientCredentialsHandler>();
             services.AddTransient<LoggingDelegatingHandler>();
 
-            //http clients
+            //Add HttpClient
+            var options = configuration.GetRequiredSection(SpotifyOptions.Section).Get<SpotifyOptions>();
+            services.AddSpotifyHttpClients(options!);
+
+            //Services
+            services.Configure<SpotifyOptions>(configuration.GetSection(SpotifyOptions.Section));
+            services.AddTransient<ISpotifySearchService, SpotifySearchService>();
+            services.AddTransient<ISpotifyPlaylistService, SpotifyPlaylistService>();
+            services.AddTransient<ISpotifyTrackService, SpotifyTrackService>();
+
+            return services;
+        }
+
+        public static IServiceCollection AddSpotifyHttpClients(this IServiceCollection services, SpotifyOptions options) 
+        {
+            services.AddHttpClient<ISpotifyUserClient, SpotifyUserClient>(client => {
+                client.BaseAddress = new Uri($"{options.SpotifyV1Url}/me");
+            })
+            .AddHttpMessageHandler<LoggingDelegatingHandler>();
+
+            services.AddHttpClient<ISpotifyPlaylistClient, SpotifyPlaylistClient>(client => {
+                client.BaseAddress = new Uri($"{options!.SpotifyV1Url}/playlists");
+            })
+            .AddHttpMessageHandler<LoggingDelegatingHandler>();
+
+             services.AddHttpClient<ISpotifyTrackClient, SpotifyTrackClient>(client => {
+                client.BaseAddress = new Uri($"{options!.SpotifyV1Url}/tracks");
+            })
+            .AddHttpMessageHandler<LoggingDelegatingHandler>();
+
             services.AddHttpClient<ISpotifySearchClient, SpotifySearchClient>(client => {
-                var options = configuration.GetSection(SpotifyOptions.Section).Get<SpotifyOptions>();
-                client.BaseAddress = new Uri(options!.SpotifySearchV1Url);
+                client.BaseAddress = new Uri($"{options.SpotifyV1Url}/search");
             })
             .AddHttpMessageHandler<LoggingDelegatingHandler>()
             .AddHttpMessageHandler<SpotifyClientCredentialsHandler>();
 
             services.AddHttpClient<ISpotifyAuthProvider, SpotifyAuthProvider>()
+                .AddHttpMessageHandler<LoggingDelegatingHandler>()
                 .ConfigurePrimaryHttpMessageHandler(serviceProvider => {
                     return new HttpClientHandler {
                         AllowAutoRedirect = false
                     };
                 });
-
-            //Services
-            services.Configure<SpotifyOptions>(configuration.GetSection(SpotifyOptions.Section));
-            services.AddTransient<ISpotifySearchService, SpotifySearchService>();
 
             return services;
         }

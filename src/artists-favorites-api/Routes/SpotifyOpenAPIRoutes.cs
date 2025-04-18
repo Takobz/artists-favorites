@@ -10,7 +10,10 @@ namespace artists_favorites_api.Routes
     {
         public static IEndpointRouteBuilder MapSpotifyV1Routes(this IEndpointRouteBuilder routeBuilder) 
         {
-            routeBuilder.MapGet("v1/search/{artistName}", async (string artistName, ISpotifySearchService spotifySearchService) => {
+            routeBuilder.MapGet("v1/search/{artistName}", async (
+                string artistName, 
+                ISpotifySearchService spotifySearchService) => 
+            {
                 var artistSearchResults = await spotifySearchService.GetArtistsByName(artistName);
                 return artistSearchResults.Any() ? 
                     Results.Ok(artistSearchResults.Select(asr => asr.ToSearchArtistResponseDTO())) : Results.NotFound();
@@ -18,13 +21,24 @@ namespace artists_favorites_api.Routes
             .WithName("SearchArtist")
             .WithOpenApi();
 
+            routeBuilder.MapPost("v1/playlist/create", async (
+                CreatePlaylistRequest request,
+                ISpotifyPlaylistService spotifyPlaylistService) => 
+            {
+                
+            })
+            .WithName("CreatePlaylist")
+            .WithOpenApi();
+
             return routeBuilder;
         }
 
         public static IEndpointRouteBuilder MapSpotifyAuthRoutes(this IEndpointRouteBuilder routeBuilder)
         {
-            routeBuilder.MapGet("initiate-authorize", async (ISpotifyAuthProvider authProvider) => {
-                var response = await authProvider.InitiateAuthorizationRequest(SpotifyUserAuthorizationScopes.UserLibraryRead);
+            routeBuilder.MapGet("initiate-authorize", async (ISpotifyAuthProvider authProvider) => 
+            {
+                var scopes = SpotifyUserAuthorizationScopes.CreateFavoritesPlaylistSpotifyScopes();
+                var response = await authProvider.InitiateAuthorizationRequest(scopes);
                 return Results.Ok(response);
             })
             .WithName("InitiateAuthorize")
@@ -32,7 +46,8 @@ namespace artists_favorites_api.Routes
 
             routeBuilder.MapPost("/spotify-user-token", async (
                 GetUserTokenRequest body,
-                ISpotifyAuthProvider authProvider) => {
+                ISpotifyAuthProvider authProvider) => 
+            {
                 var accessTokenResponse = await authProvider.GetAuthorizationCodeAccessToken(body.AuthorizationCode); 
                 return Results.Ok(accessTokenResponse.ToGetUserTokenResponseDTO());
             })
