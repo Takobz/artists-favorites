@@ -1,10 +1,12 @@
 using artists_favorites_api.Models.ClientModels.Spotify;
+using artists_favorites_api.Models.DTOs.Requests;
 using artists_favorites_api.Models.DTOs.Responses;
+using artists_favorites_api.Models.ServiceModels.SpotifyServiceModels.Commands;
 using artists_favorites_api.Models.ServiceModels.SpotifyServiceModels.Queries;
 
 namespace artists_favorites_api.Extensions 
 {
-    public static class SpotifyServiceResultsExtensions 
+    public static class SpotifyServiceExtensions 
     {
         public static IEnumerable<SearchArtistResult> ResultsFromSearchResponse(this SpotifySearchResponses searchResponses)
         {
@@ -45,6 +47,34 @@ namespace artists_favorites_api.Extensions
             return new GetUserTokenResponse(
                 response.AccessToken,
                 response.RefreshToken
+            );
+        }
+
+        public static CreateEmptyPlaylist ToCreateEmptyPlaylistCommand(this CreatePlaylistRequest request, string accessToken)
+        {
+            return new CreateEmptyPlaylist(
+                request.PlaylistName,
+                request.PlaylistDescription,
+                request.IsPublicPlaylist,
+                accessToken
+            );
+        }
+
+        public static CreatePlaylist ToCreatePlaylistClientModel(this CreateEmptyPlaylist request) 
+        {
+            return new CreatePlaylist(
+                request.PlaylistName,
+                request.PlaylistDescription,
+                request.IsPublicPlaylist
+            );
+        }
+
+        public static CreateEmptyPlaylistResult ToCreateEmptyPlaylistResult(this SpotifyPlaylistResponse response)
+        {
+            return new CreateEmptyPlaylistResult(
+                response.EntityId,
+                response.Name,
+                response.Description
             );
         }
     }

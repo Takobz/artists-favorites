@@ -35,7 +35,7 @@ namespace artists_favorites_api.Extensions
             .AddHttpMessageHandler<LoggingDelegatingHandler>();
 
             services.AddHttpClient<ISpotifyPlaylistClient, SpotifyPlaylistClient>(client => {
-                client.BaseAddress = new Uri($"{options!.SpotifyV1Url}/playlists");
+                client.BaseAddress = new Uri($"{options!.SpotifyV1Url}");
             })
             .AddHttpMessageHandler<LoggingDelegatingHandler>();
 

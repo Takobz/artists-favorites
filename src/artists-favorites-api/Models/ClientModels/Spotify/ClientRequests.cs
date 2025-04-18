@@ -11,4 +11,10 @@ namespace  artists_favorites_api.Models.ClientModels.Spotify
         [property: JsonPropertyName("show_dialog")] bool ShowDialog = true,
         [property: JsonPropertyName("response_type")] string ResponseType = SpotifyUserAuthorizationCodes.Code
     );
+
+    public record CreatePlaylist(
+        [property: JsonPropertyName("name")] string Name,
+        [property: JsonPropertyName("description")] string Description,
+        [property: JsonPropertyName("public")] bool Public
+    );
 }

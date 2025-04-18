@@ -2,10 +2,16 @@ using System.Text.Json.Serialization;
 
 namespace artists_favorites_api.Models.ClientModels.Spotify 
 {
-    public record CurrentUserProfileResponse(
+    public record SpotifyCurrentUserProfileResponse(
         [property: JsonPropertyName("country")] string Country,
         [property: JsonPropertyName("display_name")] string DisplayName,
         [property: JsonPropertyName("email")] string Email
+    ) : SpotifyEntity;
+
+    public record SpotifyPlaylistResponse(
+        [property: JsonPropertyName("tracks")] SpotifySearchResponse<SpotifyTrack> Tracks,
+        [property: JsonPropertyName("name")] string Name,
+        [property: JsonPropertyName("description")] string Description = ""
     ) : SpotifyEntity;
 
     public record BaiscAccessTokenResponse (

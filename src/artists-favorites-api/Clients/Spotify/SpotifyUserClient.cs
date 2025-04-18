@@ -8,14 +8,14 @@ namespace artists_favorites_api.Clients.Spotify
 {
     public interface ISpotifyUserClient 
     {
-        Task<CurrentUserProfileResponse> GetCurrentUserProfileResponse(string accessToken);
+        Task<SpotifyCurrentUserProfileResponse> GetCurrentUserProfileResponse(string accessToken);
     }
 
     public class SpotifyUserClient(
         HttpClient httpClient,
         ILogger<SpotifyUserClient> logger) : ISpotifyUserClient
     {
-        public async Task<CurrentUserProfileResponse> GetCurrentUserProfileResponse(string accessToken)
+        public async Task<SpotifyCurrentUserProfileResponse> GetCurrentUserProfileResponse(string accessToken)
         {
             httpClient.DefaultRequestHeaders.Remove("Authorization");
             httpClient.DefaultRequestHeaders.Add("Authorization", $"Bearer {accessToken}");
@@ -23,13 +23,13 @@ namespace artists_favorites_api.Clients.Spotify
             var response = await httpClient.GetAsync(string.Empty);
             if (response.IsSuccessStatusCode) 
             {
-                var currentUserProfile =  await JsonSerializer.DeserializeAsync<CurrentUserProfileResponse>(
+                var currentUserProfile =  await JsonSerializer.DeserializeAsync<SpotifyCurrentUserProfileResponse>(
                     await response.Content.ReadAsStreamAsync());
                 if (currentUserProfile == null)
                 {
                     logger.LogError("Failed to deserialize Http Content: {HttpResponseContent} to class: {ClassType}",
                         await response.Content.ReadAsStringAsync() ?? string.Empty,
-                        nameof(CurrentUserProfileResponse)
+                        nameof(SpotifyCurrentUserProfileResponse)
                     );
 
                     throw new ArtistsFavoritesHttpException(

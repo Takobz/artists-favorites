@@ -1,4 +1,5 @@
 using artists_favorites_api.Extensions;
+using artists_favorites_api.Middleware;
 using artists_favorites_api.Routes;
 
 var builder = WebApplication.CreateBuilder(args);
@@ -10,6 +11,8 @@ builder.Services.AddMemoryCache();
 builder.Services.AddCors();
 
 var app = builder.Build();
+
+app.UseCustomExceptionHandler();
 
 if (app.Environment.IsDevelopment())
 {

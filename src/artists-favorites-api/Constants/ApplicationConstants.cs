@@ -24,6 +24,7 @@ namespace artists_favorites_api.Constants
     {
         public const string GenericInternalAppError = "An Application Error Occured.";
         public const string ForbiddenAccess = $"User or Application presented a bad oauth token.";
+        public const string BadOrInvalid = "Bad Or Expired Token";
 
         /// <summary>
         /// Indicates insufficient or expired token to resources like spotify playlist, user profile etc.

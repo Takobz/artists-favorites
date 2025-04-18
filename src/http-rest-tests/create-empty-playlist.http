@@ -1,0 +1,43 @@
+@artists_favorites_api_HostAddress = http://localhost:5125
+
+# @name initiateAuthorize
+GET {{artists_favorites_api_HostAddress}}/initiate-authorize
+
+###
+
+# copy this url and paste in your browser to get the authorization code
+# copy the code and state query param when you get redirected so you can use them in getUserAccessToken request.
+@spotifyAuthorizeUrl = {{ initiateAuthorize.response.body.$.spotifyAuthorizeUrl }}
+
+###
+# the TEMP_authorization and TEMP_state are set in an env file
+# Please see this for http files env: https://learn.microsoft.com/en-us/aspnet/core/test/http-files#environment-files
+
+# @name getUserAccessToken
+POST {{artists_favorites_api_HostAddress}}/spotify-user-token HTTP/1.1
+Content-Type: application/json
+
+{
+    "authorizationCode": "{{TEMP_authorization_code}}",
+    "state": "{{TEMP_state}}"
+}
+
+###
+
+@resources_access_token = {{ getUserAccessToken.response.body.$.accessToken }}
+
+# @name createEmptyPlaylist
+POST {{artists_favorites_api_HostAddress}}/v1/playlist/create
+Accept: application/json
+Content-Type: application/json
+Authorization: Bearer {{ resources_access_token }}
+
+{
+    "playlistName": "Test - {{$guid}}",
+    "playlistDescription": "Tested locally",
+    "isPublicPlaylist": true
+}
+
+###
+
+@emptyPlaylistResponseStringJson = {{ createEmptyPlaylist.response.body }}
