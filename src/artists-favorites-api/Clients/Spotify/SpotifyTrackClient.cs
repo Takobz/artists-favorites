@@ -22,7 +22,8 @@ namespace artists_favorites_api.Clients.Spotify
             httpClient.DefaultRequestHeaders.Remove("Authorization");
             httpClient.DefaultRequestHeaders.Add("Authorization", $"Bearer {accessToken}");
 
-            HttpResponseMessage response =  await httpClient.GetAsync("/me/tracks?limit=50");
+            //TODO: use query builder class
+            HttpResponseMessage response =  await httpClient.GetAsync("me/tracks?offset=0&limit=50");
             while(response.IsSuccessStatusCode)
             {
                 var savedTracks =  await JsonSerializer.DeserializeAsync<SpotifySearchResponse<SpotifySavedTrack>>(
@@ -42,7 +43,7 @@ namespace artists_favorites_api.Clients.Spotify
                     );
                 }
 
-                _ = allSavedTracks.Concat(savedTracks.Items);
+                allSavedTracks.AddRange(savedTracks.Items);
 
                 if (!string.IsNullOrEmpty(savedTracks.Next)) 
                 {

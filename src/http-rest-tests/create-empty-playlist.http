@@ -1,4 +1,5 @@
 @artists_favorites_api_HostAddress = http://localhost:5125
+@artist_name = "Drake"
 
 # @name initiateAuthorize
 GET {{artists_favorites_api_HostAddress}}/initiate-authorize
@@ -25,6 +26,28 @@ Content-Type: application/json
 ###
 
 @resources_access_token = {{ getUserAccessToken.response.body.$.accessToken }}
+
+###
+
+# @name getArtistBySearch
+GET  {{ artists_favorites_api_HostAddress }}/v1/search/{{artist_name}}
+Accept: application/json
+
+###
+
+@firstArtistEntityId = {{ getArtistBySearch.response.body.$[0].artistEntityId }}
+
+###
+
+# @name getLikedSongsByArtist
+GET {{artists_favorites_api_HostAddress}}/v1/playlist/liked/{{firstArtistEntityId}}
+Authorization: Bearer {{ resources_access_token }}
+Accept: application/json
+
+###
+
+@userLikedSongsByArtist = {{ getLikedSongsByArtist.response.body }}
+
 
 # @name createEmptyPlaylist
 POST {{artists_favorites_api_HostAddress}}/v1/playlist/create

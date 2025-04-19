@@ -18,7 +18,8 @@ namespace artists_favorites_api.Extensions
                     item.ArtistName,
                     item.ExternalUrls.SpotifyUrl,
                     item.Images.FirstOrDefault()?.ImageUrl ?? string.Empty,
-                    item.ArtistPopularity
+                    item.ArtistPopularity,
+                    item.EntityId
                 );
             });
         }
@@ -29,7 +30,8 @@ namespace artists_favorites_api.Extensions
                 result.ArtistName,
                 result.ArtistSpotifyUrl,
                 result.ArtistImageUrl,
-                result.ArtistPopularity);
+                result.ArtistPopularity,
+                result.ArtistEntityId);
         }
 
         public static bool SearchFoundNoArtists (this SpotifySearchResponses? searchResponses){

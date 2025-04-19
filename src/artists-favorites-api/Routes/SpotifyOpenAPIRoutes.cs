@@ -51,8 +51,8 @@ namespace artists_favorites_api.Routes
             .WithName("CreatePlaylist")
             .WithOpenApi();
 
-            routeBuilder.MapGet("v1/playlist/liked/{artistName}", async (
-                string artistName,
+            routeBuilder.MapGet("v1/playlist/liked/{artistEntityId}", async (
+                string artistEntityId,
                 HttpRequest httpRequest,
                 ISpotifyTrackService spotifyTrackService
             ) => 
@@ -63,8 +63,8 @@ namespace artists_favorites_api.Routes
                     var accessTokenWithBearerPrefix = bearerToken.First();
                     var accessToken = accessTokenWithBearerPrefix!.Substring(7); //for Bearer soMeToken gets soMeToken substring
                     var response = await spotifyTrackService.GetUserSavedTracks(new GetSavedTracksQuery(
-                        accessToken,
-                        artistName
+                        artistEntityId,
+                        accessToken
                     ));
 
                     return Results.Ok(response);

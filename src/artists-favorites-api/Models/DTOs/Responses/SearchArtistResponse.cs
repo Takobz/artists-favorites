@@ -4,5 +4,6 @@ namespace artists_favorites_api.Models.DTOs.Responses
         string Name,
         string SpotifyUrl,
         string ImageUrl,
-        int ArtistPopularity);
+        int ArtistPopularity,
+        string ArtistEntityId);
 }
