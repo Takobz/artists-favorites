@@ -77,5 +77,14 @@ namespace artists_favorites_api.Extensions
                 response.Description
             );
         }
+
+        public static GetSavedTrackResult ToSavedTrackResult(this SpotifySavedTrack response)
+        {
+            return new GetSavedTrackResult(
+                response.Track.EntityId,
+                response.Track.TrackName,
+                response.Track.Album.Images.FirstOrDefault()?.ImageUrl ?? string.Empty
+            );
+        }
     }
 }

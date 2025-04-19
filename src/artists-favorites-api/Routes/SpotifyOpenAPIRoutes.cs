@@ -5,6 +5,7 @@ using artists_favorites_api.Exceptions;
 using artists_favorites_api.Constants;
 using artists_favorites_api.Services;
 using System.Net;
+using artists_favorites_api.Models.ServiceModels.SpotifyServiceModels.Queries;
 
 namespace artists_favorites_api.Routes 
 {
@@ -48,6 +49,35 @@ namespace artists_favorites_api.Routes
                 }
             })
             .WithName("CreatePlaylist")
+            .WithOpenApi();
+
+            routeBuilder.MapGet("v1/playlist/liked/{artistName}", async (
+                string artistName,
+                HttpRequest httpRequest,
+                ISpotifyTrackService spotifyTrackService
+            ) => 
+            {
+                if (httpRequest.Headers.TryGetValue("Authorization", out var bearerToken) &&
+                    !string.IsNullOrEmpty(bearerToken.FirstOrDefault())) 
+                {
+                    var accessTokenWithBearerPrefix = bearerToken.First();
+                    var accessToken = accessTokenWithBearerPrefix!.Substring(7); //for Bearer soMeToken gets soMeToken substring
+                    var response = await spotifyTrackService.GetUserSavedTracks(new GetSavedTracksQuery(
+                        accessToken,
+                        artistName
+                    ));
+
+                    return Results.Ok(response);
+                }
+                else 
+                {
+                    throw new ArtistsFavoritesHttpException(
+                        (int)HttpStatusCode.Unauthorized,
+                        FriendlyErrorMessage.UnauthorisedAccess("User Liked Songs")
+                    );
+                }
+            })
+            .WithName("GetLikeSongsByArtist")
             .WithOpenApi();
 
             return routeBuilder;

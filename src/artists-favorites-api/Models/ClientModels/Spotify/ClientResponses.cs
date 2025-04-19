@@ -36,6 +36,7 @@ namespace artists_favorites_api.Models.ClientModels.Spotify
         [property: JsonPropertyName("href")] string HRef,
         [property: JsonPropertyName("limit")] int Limit,
         [property: JsonPropertyName("next")] string Next,
+        [property: JsonPropertyName("previous")] string Previous,
         [property: JsonPropertyName("offset")] int Offset,
         [property: JsonPropertyName("total")] int Total,
         [property: JsonPropertyName("items")] IEnumerable<T> Items 
@@ -51,7 +52,28 @@ namespace artists_favorites_api.Models.ClientModels.Spotify
         [property: JsonPropertyName("popularity")] int ArtistPopularity
     ) : SpotifyEntity();
 
-    public record SpotifyTrack () : SpotifyEntity;
+    public record SpotifySavedTrack(
+        [property: JsonPropertyName("added_at")] string AddedAt,
+        [property: JsonPropertyName("track")] SpotifyTrack Track
+    ) : SpotifyEntity;
+
+    public record SpotifyTrack (
+        [property: JsonPropertyName("artists")] IEnumerable<SpotifySimplifiedArtist> Artists,
+        [property: JsonPropertyName("name")] string TrackName,
+        [property: JsonPropertyName("album")] SpotifyAlbum Album
+    ) : SpotifyEntity;
+
+    public record SpotifySimplifiedArtist(
+        [property: JsonPropertyName("name")] string ArtistName
+    ) : SpotifyEntity;
+
+    public record SpotifyAlbum(
+        [property: JsonPropertyName("album_type")] string AlbumType,
+        [property: JsonPropertyName("total_tracks")] int TotalTracks,
+        [property: JsonPropertyName("release_date")] string ReleaseDate,
+        [property: JsonPropertyName("artists")] IEnumerable<SpotifySimplifiedArtist> Artists,
+        [property: JsonPropertyName("images")] IEnumerable<SpotifyImage> Images
+    ) : SpotifyEntity;
 
     public record SpotifyExternalUrls(
         [property: JsonPropertyName("spotify")] string SpotifyUrl);
