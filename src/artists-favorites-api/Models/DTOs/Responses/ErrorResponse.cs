@@ -1,6 +1,6 @@
 namespace artists_favorites_api.Models.DTOs.Responses 
 {
-    public record ErrorResponse(
+    public record ErrorResponseDTO(
         int HttpStatusCode,
         string Message
     );

@@ -52,7 +52,7 @@ namespace artists_favorites_api.Middleware
         {
             context.Response.StatusCode = statusCode;
             await context.Response.WriteAsJsonAsync(
-                new ErrorResponse (
+                new ErrorResponseDTO (
                     statusCode,
                     message
                 )

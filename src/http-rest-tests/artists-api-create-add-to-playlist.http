@@ -1,5 +1,5 @@
 @artists_favorites_api_HostAddress = http://localhost:5125
-@artist_name = "Drake"
+@artist_name = "MF DOOM"
 
 # @name initiateAuthorize
 GET {{artists_favorites_api_HostAddress}}/initiate-authorize
@@ -46,7 +46,8 @@ Accept: application/json
 
 ###
 
-@userLikedSongsByArtist = {{ getLikedSongsByArtist.response.body }}
+@song_to_add_1={{ getLikedSongsByArtist.response.body.$[0].trackId }}
+@song_to_add_2={{ getLikedSongsByArtist.response.body.$[1].trackId }}
 
 
 # @name createEmptyPlaylist
@@ -63,4 +64,22 @@ Authorization: Bearer {{ resources_access_token }}
 
 ###
 
-@emptyPlaylistResponseStringJson = {{ createEmptyPlaylist.response.body }}
+@emptyPlaylistId = {{ createEmptyPlaylist.response.body.$.playlistId }}
+
+###
+
+# @name AddSongsToPlaylist
+PUT {{artists_favorites_api_HostAddress}}/v1/playlist/{{emptyPlaylistId}}
+Accept: application/json
+Content-Type: application/json
+Authorization: Bearer {{resources_access_token}}
+
+{
+    "tracks": [
+        "{{song_to_add_1}}",
+        "{{song_to_add_2}}"
+    ],
+    "shows": []
+}
+
+###

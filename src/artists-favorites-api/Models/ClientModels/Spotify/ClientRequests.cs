@@ -12,9 +12,14 @@ namespace  artists_favorites_api.Models.ClientModels.Spotify
         [property: JsonPropertyName("response_type")] string ResponseType = SpotifyUserAuthorizationCodes.Code
     );
 
-    public record CreatePlaylist(
+    public record CreatePlaylistRequest(
         [property: JsonPropertyName("name")] string Name,
         [property: JsonPropertyName("description")] string Description,
         [property: JsonPropertyName("public")] bool Public
+    );
+
+    public record AddItemsToPlaylistRequest(
+        [property: JsonPropertyName("uris")] IEnumerable<string> Uris,
+        [property: JsonPropertyName("postion")] int? Position = null
     );
 }

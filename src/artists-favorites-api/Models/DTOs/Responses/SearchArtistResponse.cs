@@ -1,6 +1,6 @@
 namespace artists_favorites_api.Models.DTOs.Responses 
 {
-    public record SearchArtistResponse(
+    public record SearchArtistResponseDTO(
         string Name,
         string SpotifyUrl,
         string ImageUrl,

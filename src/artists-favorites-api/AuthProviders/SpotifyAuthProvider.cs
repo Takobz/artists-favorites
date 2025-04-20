@@ -24,7 +24,7 @@ namespace artists_favorites_api.AuthProviders
         /// </summary>
         /// <param name="scopes">Scope that the application is requesting on behalf of the user</param>
         /// <returns>Redirect URI that will be passed to the UI.</returns>
-        Task<InitiateAuthorizeResponse> InitiateAuthorizationRequest(string scopes);
+        Task<InitiateAuthorizeResponseDTO> InitiateAuthorizationRequest(string scopes);
         
         /// <summary>
         /// Get the Access token in exchange of the OAuth2.0 authorization code recieved. 
@@ -76,7 +76,7 @@ namespace artists_favorites_api.AuthProviders
             return accessToken;
         }
 
-        public async Task<InitiateAuthorizeResponse> InitiateAuthorizationRequest(string scopes)
+        public async Task<InitiateAuthorizeResponseDTO> InitiateAuthorizationRequest(string scopes)
         {
             var request = new AuthorizeUserRequest(
                 ClientId: _spotifyOptions.ClientId,
@@ -94,7 +94,7 @@ namespace artists_favorites_api.AuthProviders
                 response.StatusCode == HttpStatusCode.Redirect)
             {
                 var spotifyAuthorizeUrl = response?.Headers?.Location?.AbsoluteUri ?? string.Empty;
-                return new InitiateAuthorizeResponse(spotifyAuthorizeUrl);
+                return new InitiateAuthorizeResponseDTO(spotifyAuthorizeUrl);
             }
 
             throw new Exception("Failed To Initiate authorize request");

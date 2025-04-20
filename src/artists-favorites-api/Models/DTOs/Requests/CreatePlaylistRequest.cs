@@ -1,6 +1,6 @@
 namespace artists_favorites_api.Models.DTOs.Requests 
 {
-    public record CreatePlaylistRequest(
+    public record CreatePlaylistRequestDTO(
     string PlaylistName,
     string PlaylistDescription,
     bool IsPublicPlaylist);

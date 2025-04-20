@@ -26,7 +26,7 @@ namespace artists_favorites_api.Routes
             .WithOpenApi();
 
             routeBuilder.MapPost("v1/playlist/create", async (
-                CreatePlaylistRequest request,
+                CreatePlaylistRequestDTO request,
                 HttpRequest httpRequest,
                 ISpotifyPlaylistService spotifyPlaylistService) => 
             {
@@ -51,6 +51,34 @@ namespace artists_favorites_api.Routes
             .WithName("CreatePlaylist")
             .WithOpenApi();
 
+            routeBuilder.MapPut("v1/playlist/{playlistId}", async (
+                string playlistId,
+                AddItemsToPlaylistRequestDTO request,
+                HttpRequest httpRequest,
+                ISpotifyPlaylistService spotifyPlaylistService
+             ) => {
+                if (httpRequest.Headers.TryGetValue("Authorization", out var bearerToken) &&
+                    !string.IsNullOrEmpty(bearerToken.FirstOrDefault())) 
+                {
+                    var accessTokenWithBearerPrefix = bearerToken.First();
+                    var accessToken = accessTokenWithBearerPrefix!.Substring(7); //for Bearer soMeToken gets soMeToken substring
+                    var addItemsCommand = request.ToAddItemsCommand(playlistId, accessToken);
+                    var response = await spotifyPlaylistService.AddItemsToPlaylist(addItemsCommand);
+
+                    return Results.Created(string.Empty, response);
+                }
+                else 
+                {
+                    throw new ArtistsFavoritesHttpException(
+                        (int)HttpStatusCode.Unauthorized,
+                        FriendlyErrorMessage.UnauthorisedAccess("Add Items to user playlist")
+                    );
+                }
+            })
+            .WithName("AddTracksToPlaylist")
+            .WithOpenApi();
+
+            //TODO: Add authentication handler that extracts the bearer token
             routeBuilder.MapGet("v1/playlist/liked/{artistEntityId}", async (
                 string artistEntityId,
                 HttpRequest httpRequest,
@@ -95,7 +123,7 @@ namespace artists_favorites_api.Routes
             .WithOpenApi();
 
             routeBuilder.MapPost("/spotify-user-token", async (
-                GetUserTokenRequest body,
+                GetUserTokenRequestDTO body,
                 ISpotifyAuthProvider authProvider) => 
             {
                 var accessTokenResponse = await authProvider.GetAuthorizationCodeAccessToken(body.AuthorizationCode); 

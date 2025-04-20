@@ -6,7 +6,7 @@ using artists_favorites_api.Models.ServiceModels.SpotifyServiceModels.Queries;
 
 namespace artists_favorites_api.Extensions 
 {
-    public static class SpotifyServiceExtensions 
+    public static class SpotifyMapperExtension 
     {
         public static IEnumerable<SearchArtistResult> ResultsFromSearchResponse(this SpotifySearchResponses searchResponses)
         {
@@ -24,9 +24,9 @@ namespace artists_favorites_api.Extensions
             });
         }
 
-        public static SearchArtistResponse ToSearchArtistResponseDTO (this SearchArtistResult result)
+        public static SearchArtistResponseDTO ToSearchArtistResponseDTO (this SearchArtistResult result)
         {
-            return new SearchArtistResponse(
+            return new SearchArtistResponseDTO(
                 result.ArtistName,
                 result.ArtistSpotifyUrl,
                 result.ArtistImageUrl,
@@ -42,19 +42,19 @@ namespace artists_favorites_api.Extensions
                 !searchResponses.ArtistsSearchResponses.Items.Any();
         }
 
-        public static GetUserTokenResponse ToGetUserTokenResponseDTO(this AuthorizationCodeAccessTokenResponse? response)
+        public static GetUserTokenResponseDTO ToGetUserTokenResponseDTO(this AuthorizationCodeAccessTokenResponse? response)
         {
             if (response == null) throw new Exception("Can't convert a null response");
 
-            return new GetUserTokenResponse(
+            return new GetUserTokenResponseDTO(
                 response.AccessToken,
                 response.RefreshToken
             );
         }
 
-        public static CreateEmptyPlaylist ToCreateEmptyPlaylistCommand(this CreatePlaylistRequest request, string accessToken)
+        public static CreateEmptyPlaylistCommand ToCreateEmptyPlaylistCommand(this Models.DTOs.Requests.CreatePlaylistRequestDTO request, string accessToken)
         {
-            return new CreateEmptyPlaylist(
+            return new CreateEmptyPlaylistCommand(
                 request.PlaylistName,
                 request.PlaylistDescription,
                 request.IsPublicPlaylist,
@@ -62,9 +62,9 @@ namespace artists_favorites_api.Extensions
             );
         }
 
-        public static CreatePlaylist ToCreatePlaylistClientModel(this CreateEmptyPlaylist request) 
+        public static CreatePlaylistRequest ToCreatePlaylistClientModel(this CreateEmptyPlaylistCommand request) 
         {
-            return new CreatePlaylist(
+            return new CreatePlaylistRequest(
                 request.PlaylistName,
                 request.PlaylistDescription,
                 request.IsPublicPlaylist
@@ -86,6 +86,44 @@ namespace artists_favorites_api.Extensions
                 response.Track.EntityId,
                 response.Track.TrackName,
                 response.Track.Album.Images.FirstOrDefault()?.ImageUrl ?? string.Empty
+            );
+        }
+
+        public static AddItemsToPlaylistResult ToAddItemsToPlaylistResult(
+            this SpotifySnapshotResponse response,
+            string playlistUri
+        )
+        {
+            return new AddItemsToPlaylistResult(
+                response.SnapshotId,
+                playlistUri
+            );
+        }
+
+        public static AddItemsToPlaylistCommand ToAddItemsCommand(
+            this AddItemsToPlaylistRequestDTO dto,
+            string playlistId,
+            string accessToken
+        )
+        {   List<string> spotifyUris = [];
+            if (dto.Tracks.Any())
+            {
+                spotifyUris.AddRange(
+                    dto.Tracks.Select(id => $"spotify:track:{id}")
+                );
+            }
+
+            if (dto.Shows.Any()) 
+            {
+                spotifyUris.AddRange(
+                    dto.Shows.Select(id => $"spotify:show:{id}")
+                );
+            }
+
+            return new AddItemsToPlaylistCommand(
+                playlistId,
+                accessToken,
+                spotifyUris
             );
         }
     }

@@ -1,6 +1,6 @@
 namespace artists_favorites_api.Models.DTOs.Responses 
 {
-    public record GetUserTokenResponse(
+    public record GetUserTokenResponseDTO(
         string AccessToken,
         string RefreshToken
     );

@@ -2,6 +2,10 @@ using System.Text.Json.Serialization;
 
 namespace artists_favorites_api.Models.ClientModels.Spotify 
 {
+    public record SpotifySnapshotResponse(
+        [property: JsonPropertyName("snapshot_id")] string SnapshotId
+    );
+
     public record SpotifyCurrentUserProfileResponse(
         [property: JsonPropertyName("country")] string Country,
         [property: JsonPropertyName("display_name")] string DisplayName,
