@@ -5,7 +5,7 @@ using artists_favorites_api.Exceptions;
 using artists_favorites_api.Extensions;
 namespace artists_favorites_api.DelegatingHandlers 
 {
-    public class SpotifyUserAccessTokenHandler(IHttpContextAccessor contextAccessor) : DelegatingHandler 
+    public class SpotifyUserAccessTokenDelegatingHandler(IHttpContextAccessor contextAccessor) : DelegatingHandler 
     {
         protected override Task<HttpResponseMessage> SendAsync(HttpRequestMessage request, CancellationToken cancellationToken)
         {

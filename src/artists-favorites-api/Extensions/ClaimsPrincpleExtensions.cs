@@ -23,19 +23,5 @@ namespace artists_favorites_api.Extensions
                 .First(claim => claim.Type == claimName)
                 .Value;
         }
-
-        public static string GetSpotifyUserEntityId(this ClaimsPrincipal user){
-            var spotifyIdentity = user.Identities.FirstOrDefault(identity => identity.Claims.Any(
-                claim => claim.Type == SpotifyAuthenticationCustomClaims.SpotifyUserEntityId
-            )) ?? 
-            throw new ArtistsFavoritesHttpException(
-                    (int)HttpStatusCode.Unauthorized,
-                    FriendlyErrorMessage.UnauthorisedAccess()
-            );
-
-            return spotifyIdentity.Claims
-                .First(claim => claim.Type == SpotifyAuthenticationCustomClaims.SpotifyUserEntityId)
-                .Value;
-        }
     }
 }

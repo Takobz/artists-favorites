@@ -12,9 +12,9 @@ namespace artists_favorites_api.Extensions
         public static IServiceCollection AddSpotifyServices (this IServiceCollection services, IConfiguration configuration)
         {
             //Delegating Handlers
-            services.AddTransient<SpotifyClientCredentialsHandler>();
+            services.AddTransient<SpotifyClientCredentialsDelegatingHandler>();
             services.AddTransient<LoggingDelegatingHandler>();
-            services.AddTransient<SpotifyUserAccessTokenHandler>();
+            services.AddTransient<SpotifyUserAccessTokenDelegatingHandler>();
 
             //Add HttpClient
             var options = configuration.GetRequiredSection(SpotifyOptions.Section).Get<SpotifyOptions>();
@@ -52,19 +52,19 @@ namespace artists_favorites_api.Extensions
                 client.BaseAddress = new Uri($"{options!.SpotifyV1Url}");
             })
             .AddHttpMessageHandler<LoggingDelegatingHandler>()
-            .AddHttpMessageHandler<SpotifyUserAccessTokenHandler>();
+            .AddHttpMessageHandler<SpotifyUserAccessTokenDelegatingHandler>();
 
              services.AddHttpClient<ISpotifyTrackClient, SpotifyTrackClient>(client => {
                 client.BaseAddress = new Uri($"{options!.SpotifyV1Url}/tracks");
             })
             .AddHttpMessageHandler<LoggingDelegatingHandler>()
-            .AddHttpMessageHandler<SpotifyUserAccessTokenHandler>();
+            .AddHttpMessageHandler<SpotifyUserAccessTokenDelegatingHandler>();
 
             services.AddHttpClient<ISpotifySearchClient, SpotifySearchClient>(client => {
                 client.BaseAddress = new Uri($"{options.SpotifyV1Url}/search");
             })
             .AddHttpMessageHandler<LoggingDelegatingHandler>()
-            .AddHttpMessageHandler<SpotifyClientCredentialsHandler>();
+            .AddHttpMessageHandler<SpotifyClientCredentialsDelegatingHandler>();
 
             //TODO: Move SpotifyUserClient into SpotifyAuthProvider
             //TODO: rename SpotifyAuthProvider to SpotifyAuthServerClient

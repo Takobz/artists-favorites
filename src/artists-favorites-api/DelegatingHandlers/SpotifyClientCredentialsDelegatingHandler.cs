@@ -5,7 +5,7 @@ using artists_favorites_api.Authentication;
 
 namespace artists_favorites_api.DelegatingHandlers 
 {
-    public class SpotifyClientCredentialsHandler(
+    public class SpotifyClientCredentialsDelegatingHandler(
         IMemoryCache memoryCache,
         ISpotifyAuthProvider spotifyAuthProvider) : DelegatingHandler
     {
