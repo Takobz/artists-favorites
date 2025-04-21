@@ -9,7 +9,7 @@ using artists_favorites_api.Helpers;
 using System.Net;
 using artists_favorites_api.Models.DTOs.Responses;
 
-namespace artists_favorites_api.AuthProviders 
+namespace artists_favorites_api.Authentication
 {
     public interface ISpotifyAuthProvider 
     {

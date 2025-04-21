@@ -1,11 +1,11 @@
 using artists_favorites_api.Models.DTOs.Requests;
-using artists_favorites_api.AuthProviders;
 using artists_favorites_api.Extensions;
 using artists_favorites_api.Exceptions;
 using artists_favorites_api.Constants;
 using artists_favorites_api.Services;
 using System.Net;
 using artists_favorites_api.Models.ServiceModels.SpotifyServiceModels.Queries;
+using artists_favorites_api.Authentication;
 
 namespace artists_favorites_api.Routes 
 {
@@ -48,6 +48,7 @@ namespace artists_favorites_api.Routes
                     );
                 }
             })
+            .RequireAuthorization(SpotifyAuthenticationCustomPolicies.SpotifyUser)
             .WithName("CreatePlaylist")
             .WithOpenApi();
 
@@ -75,6 +76,7 @@ namespace artists_favorites_api.Routes
                     );
                 }
             })
+            .RequireAuthorization(SpotifyAuthenticationCustomPolicies.SpotifyUser)
             .WithName("AddTracksToPlaylist")
             .WithOpenApi();
 
@@ -105,6 +107,7 @@ namespace artists_favorites_api.Routes
                     );
                 }
             })
+            .RequireAuthorization(SpotifyAuthenticationCustomPolicies.SpotifyUser)
             .WithName("GetLikeSongsByArtist")
             .WithOpenApi();
 

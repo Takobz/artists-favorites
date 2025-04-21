@@ -1,52 +1,62 @@
+using System.Net;
 using artists_favorites_api.Constants;
 using artists_favorites_api.Exceptions;
 using artists_favorites_api.Models.DTOs.Responses;
-using Microsoft.AspNetCore.Diagnostics;
 
 namespace artists_favorites_api.Middleware 
 {
-    public static class GlobalExceptionHandler 
+    public class GlobalExceptionHandlerMiddleware(
+        RequestDelegate next,
+        ILogger<GlobalExceptionHandlerMiddleware> logger
+    ) 
     {
-        public static WebApplication UseCustomExceptionHandler(this WebApplication app)
+        public async Task InvokeAsync(HttpContext httpContext)
         {
-            app.UseExceptionHandler(appBuilder => {
-                appBuilder.Run(async context => {
-                    var exceptionHandlerFeature = context.Features.Get<IExceptionHandlerFeature>();
-                    if (exceptionHandlerFeature == null || 
-                        (exceptionHandlerFeature?.Error == null && exceptionHandlerFeature?.Error?.InnerException == null)) 
-                    {
-                        await context.WriteErrorResponse();
-                        return;
-                    }
+            try 
+            {
+                await next(httpContext);
+            }
+            catch(ArtistsFavoritesHttpException exception)
+            {
+                await UseCustomExceptionHandler(httpContext, exception);
+            }
+            catch(Exception exception)
+            {
+                await UseCustomExceptionHandler(httpContext, exception);
+            }
+            
+        }
 
-                    if (exceptionHandlerFeature!.Error?.GetType() != typeof(ArtistsFavoritesHttpException) ||
-                        exceptionHandlerFeature!.Error?.InnerException?.GetType() != typeof(ArtistsFavoritesHttpException)) 
-                    {
-                        await context.WriteErrorResponse();
-                        return;
-                    }
+        public async Task UseCustomExceptionHandler(
+            HttpContext context,
+            Exception exception)
+        {
+            if (exception == null || exception?.InnerException == null)
+                await WriteErrorResponse(context);
 
-                    var applicationException = exceptionHandlerFeature.Error as ArtistsFavoritesHttpException ??
-                         exceptionHandlerFeature.Error?.InnerException as ArtistsFavoritesHttpException;
-                    if (applicationException == null) 
-                    {
-                        await context.WriteErrorResponse();
-                        return;
-                    }
+            logger.LogError("Exception thrown was not custom type: {CustomExceptionType} but was {ExceptionType} with message {ExceptionMessage}",
+                typeof(ArtistsFavoritesHttpException),
+                exception?.GetType() ?? exception?.InnerException?.GetType(),
+                exception?.Message ?? exception?.InnerException?.Message ?? "No Exception Message"
+            );
 
-                    await context.WriteErrorResponse(
-                        applicationException.HttpStatusCode,
-                        applicationException.Message
-                    );
-                    
-                });
-            });
+            await WriteErrorResponse(context);
+        }
 
-            return app;
+        public async Task UseCustomExceptionHandler(
+            HttpContext context,
+            ArtistsFavoritesHttpException exception
+        )
+        {
+            await WriteErrorResponse(
+                context,
+                exception?.HttpStatusCode ?? (int)HttpStatusCode.InternalServerError,
+                exception?.Message ?? FriendlyErrorMessage.GenericInternalAppError
+            );
         }
 
         private static async Task WriteErrorResponse(
-            this HttpContext context,
+            HttpContext context,
             int statusCode = 500,
             string message = FriendlyErrorMessage.GenericInternalAppError)
         {

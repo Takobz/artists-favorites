@@ -1,7 +1,7 @@
 using Microsoft.Extensions.Caching.Memory;
 using artists_favorites_api.Constants;
-using artists_favorites_api.AuthProviders;
 using artists_favorites_api.Models.ClientModels.Spotify;
+using artists_favorites_api.Authentication;
 
 namespace artists_favorites_api.DelegatingHandlers 
 {
