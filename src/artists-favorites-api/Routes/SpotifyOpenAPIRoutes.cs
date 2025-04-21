@@ -27,26 +27,11 @@ namespace artists_favorites_api.Routes
 
             routeBuilder.MapPost("v1/playlist/create", async (
                 CreatePlaylistRequestDTO request,
-                HttpRequest httpRequest,
                 ISpotifyPlaylistService spotifyPlaylistService) => 
             {
-                if (httpRequest.Headers.TryGetValue("Authorization", out var bearerToken) &&
-                    !string.IsNullOrEmpty(bearerToken.FirstOrDefault())) 
-                {
-                    var accessTokenWithBearerPrefix = bearerToken.First();
-                    var accessToken = accessTokenWithBearerPrefix!.Substring(7); //for Bearer soMeToken gets soMeToken substring
-                    var createEmptyPlaylistCommand = request.ToCreateEmptyPlaylistCommand(accessToken);
-                    var response = await spotifyPlaylistService.CreateEmptyPlaylist(createEmptyPlaylistCommand);
-
-                    return Results.Created(string.Empty, response);
-                }
-                else 
-                {
-                    throw new ArtistsFavoritesHttpException(
-                        (int)HttpStatusCode.Unauthorized,
-                        FriendlyErrorMessage.UnauthorisedAccess("User Playlists")
-                    );
-                }
+                var createEmptyPlaylistCommand = request.ToCreateEmptyPlaylistCommand();
+                var response = await spotifyPlaylistService.CreateEmptyPlaylist(createEmptyPlaylistCommand);
+                return Results.Created(string.Empty, response);
             })
             .RequireAuthorization(SpotifyAuthenticationCustomPolicies.SpotifyUser)
             .WithName("CreatePlaylist")
@@ -55,26 +40,12 @@ namespace artists_favorites_api.Routes
             routeBuilder.MapPut("v1/playlist/{playlistId}", async (
                 string playlistId,
                 AddItemsToPlaylistRequestDTO request,
-                HttpRequest httpRequest,
                 ISpotifyPlaylistService spotifyPlaylistService
-             ) => {
-                if (httpRequest.Headers.TryGetValue("Authorization", out var bearerToken) &&
-                    !string.IsNullOrEmpty(bearerToken.FirstOrDefault())) 
-                {
-                    var accessTokenWithBearerPrefix = bearerToken.First();
-                    var accessToken = accessTokenWithBearerPrefix!.Substring(7); //for Bearer soMeToken gets soMeToken substring
-                    var addItemsCommand = request.ToAddItemsCommand(playlistId, accessToken);
-                    var response = await spotifyPlaylistService.AddItemsToPlaylist(addItemsCommand);
-
-                    return Results.Created(string.Empty, response);
-                }
-                else 
-                {
-                    throw new ArtistsFavoritesHttpException(
-                        (int)HttpStatusCode.Unauthorized,
-                        FriendlyErrorMessage.UnauthorisedAccess("Add Items to user playlist")
-                    );
-                }
+             ) => 
+            {
+                var addItemsCommand = request.ToAddItemsCommand(playlistId);
+                var response = await spotifyPlaylistService.AddItemsToPlaylist(addItemsCommand);
+                return Results.Created(string.Empty, response);
             })
             .RequireAuthorization(SpotifyAuthenticationCustomPolicies.SpotifyUser)
             .WithName("AddTracksToPlaylist")
@@ -83,32 +54,17 @@ namespace artists_favorites_api.Routes
             //TODO: Add authentication handler that extracts the bearer token
             routeBuilder.MapGet("v1/playlist/liked/{artistEntityId}", async (
                 string artistEntityId,
-                HttpRequest httpRequest,
                 ISpotifyTrackService spotifyTrackService
             ) => 
             {
-                if (httpRequest.Headers.TryGetValue("Authorization", out var bearerToken) &&
-                    !string.IsNullOrEmpty(bearerToken.FirstOrDefault())) 
-                {
-                    var accessTokenWithBearerPrefix = bearerToken.First();
-                    var accessToken = accessTokenWithBearerPrefix!.Substring(7); //for Bearer soMeToken gets soMeToken substring
-                    var response = await spotifyTrackService.GetUserSavedTracks(new GetSavedTracksQuery(
-                        artistEntityId,
-                        accessToken
-                    ));
+                var response = await spotifyTrackService.GetUserSavedTracks(new GetSavedTracksQuery(
+                    artistEntityId
+                ));
 
-                    return Results.Ok(response);
-                }
-                else 
-                {
-                    throw new ArtistsFavoritesHttpException(
-                        (int)HttpStatusCode.Unauthorized,
-                        FriendlyErrorMessage.UnauthorisedAccess("User Liked Songs")
-                    );
-                }
+                return Results.Ok(response);
             })
             .RequireAuthorization(SpotifyAuthenticationCustomPolicies.SpotifyUser)
-            .WithName("GetLikeSongsByArtist")
+            .WithName("GetLikedSongsByArtist")
             .WithOpenApi();
 
             return routeBuilder;

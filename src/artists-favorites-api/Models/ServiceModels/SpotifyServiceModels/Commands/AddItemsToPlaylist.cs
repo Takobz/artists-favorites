@@ -2,7 +2,6 @@ namespace artists_favorites_api.Models.ServiceModels.SpotifyServiceModels.Comman
 {
     public record AddItemsToPlaylistCommand(
         string PlaylistId,
-        string AccessToken,
         IEnumerable<string> ItemsToAdd
     );
 }

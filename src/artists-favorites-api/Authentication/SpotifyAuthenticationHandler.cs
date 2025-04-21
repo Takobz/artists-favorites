@@ -44,13 +44,13 @@ namespace artists_favorites_api.Authentication
 
             var claimsIdentity = new ClaimsIdentity([
                 new Claim(SpotifyAuthenticationCustomClaims.SpotifyAccessToken, spotifyAccessToken),
+                new Claim(SpotifyAuthenticationCustomClaims.SpotifyUserEntityId, userProfile.EntityId),
                 new Claim(ClaimTypes.Name, userProfile.DisplayName),
                 new Claim(ClaimTypes.Email, userProfile.Email)
             ]);
 
             return AuthenticateResult.Success(new AuthenticationTicket(
-                new ClaimsPrincipal(new ClaimsPrincipal(claimsIdentity)),
-                new AuthenticationProperties(),
+                new ClaimsPrincipal(claimsIdentity),
                 SpotifyAuthenticationDefaults.AuthenticationScheme
             ));
         }
@@ -96,5 +96,10 @@ namespace artists_favorites_api.Authentication
     public static class SpotifyAuthenticationDefaults 
     {
         public const string AuthenticationScheme = "SpotifyUserDelegationAuthentication";
+
+        /// <summary>
+        /// Used to identify the ClaimsIdentity that will be created by this handler.
+        /// </summary>
+        public const string AuthenticationSchemeNameType = "SpotifyIdentity";
     }
 }

@@ -27,6 +27,11 @@ namespace artists_favorites_api.Constants
         /// This access token will grant the app permission to do action on behalf of the user.
         /// </summary>
         public const string SpotifyAccessToken = "SpotifyAccessToken";
+
+        /// <summary>
+        /// Represents the user's Spotify ID.
+        /// </summary>
+        public const string SpotifyUserEntityId = "SpotifyUserEntityId";
     }
 
     public static class SpotifyAuthenticationCustomPolicies 

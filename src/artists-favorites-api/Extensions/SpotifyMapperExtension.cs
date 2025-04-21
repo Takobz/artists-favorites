@@ -52,13 +52,12 @@ namespace artists_favorites_api.Extensions
             );
         }
 
-        public static CreateEmptyPlaylistCommand ToCreateEmptyPlaylistCommand(this Models.DTOs.Requests.CreatePlaylistRequestDTO request, string accessToken)
+        public static CreateEmptyPlaylistCommand ToCreateEmptyPlaylistCommand(this CreatePlaylistRequestDTO request)
         {
             return new CreateEmptyPlaylistCommand(
                 request.PlaylistName,
                 request.PlaylistDescription,
-                request.IsPublicPlaylist,
-                accessToken
+                request.IsPublicPlaylist
             );
         }
 
@@ -102,8 +101,7 @@ namespace artists_favorites_api.Extensions
 
         public static AddItemsToPlaylistCommand ToAddItemsCommand(
             this AddItemsToPlaylistRequestDTO dto,
-            string playlistId,
-            string accessToken
+            string playlistId
         )
         {   List<string> spotifyUris = [];
             if (dto.Tracks.Any())
@@ -122,7 +120,6 @@ namespace artists_favorites_api.Extensions
 
             return new AddItemsToPlaylistCommand(
                 playlistId,
-                accessToken,
                 spotifyUris
             );
         }

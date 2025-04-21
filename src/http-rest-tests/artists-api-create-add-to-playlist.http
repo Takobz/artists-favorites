@@ -1,5 +1,5 @@
 @artists_favorites_api_HostAddress = http://localhost:5125
-@artist_name = "MF DOOM"
+@artist_name = "Kabza De Small"
 
 # @name initiateAuthorize
 GET {{artists_favorites_api_HostAddress}}/initiate-authorize

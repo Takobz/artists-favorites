@@ -14,7 +14,6 @@ namespace artists_favorites_api.Services
     }
 
     public class SpotifyPlaylistService(
-        ISpotifyUserClient spotifyUserClient,
         ISpotifyPlaylistClient spotifyPlaylistClient,
         IOptionsMonitor<SpotifyOptions> options
     ) : ISpotifyPlaylistService
@@ -23,7 +22,6 @@ namespace artists_favorites_api.Services
         {
             var result = await spotifyPlaylistClient.AddTracksToPlaylist(
                 command.PlaylistId,
-                command.AccessToken,
                 new AddItemsToPlaylistRequest(command.ItemsToAdd)
             );
 
@@ -35,11 +33,7 @@ namespace artists_favorites_api.Services
         public async Task<CreateEmptyPlaylistResult> CreateEmptyPlaylist(CreateEmptyPlaylistCommand command)
         {
             var request = command.ToCreatePlaylistClientModel();
-            var userProfile = await spotifyUserClient.GetCurrentUserProfileResponse(command.AccessToken);
-            var createPlaylist = await spotifyPlaylistClient.CreatePlaylist(
-                userProfile.EntityId,
-                command.AccessToken,
-                request);
+            var createPlaylist = await spotifyPlaylistClient.CreatePlaylist(request);
 
             return createPlaylist.ToCreateEmptyPlaylistResult();
         }

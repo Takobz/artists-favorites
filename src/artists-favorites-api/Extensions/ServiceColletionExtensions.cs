@@ -1,5 +1,6 @@
 using artists_favorites_api.Authentication;
 using artists_favorites_api.Clients.Spotify;
+using artists_favorites_api.Constants;
 using artists_favorites_api.DelegatingHandlers;
 using artists_favorites_api.Models.Options;
 using artists_favorites_api.Services;
@@ -13,6 +14,7 @@ namespace artists_favorites_api.Extensions
             //Delegating Handlers
             services.AddTransient<SpotifyClientCredentialsHandler>();
             services.AddTransient<LoggingDelegatingHandler>();
+            services.AddTransient<SpotifyUserAccessTokenHandler>();
 
             //Add HttpClient
             var options = configuration.GetRequiredSection(SpotifyOptions.Section).Get<SpotifyOptions>();
@@ -27,28 +29,49 @@ namespace artists_favorites_api.Extensions
             return services;
         }
 
-        public static IServiceCollection AddSpotifyHttpClients(this IServiceCollection services, SpotifyOptions options) 
+        public static IServiceCollection AddSpotifyAuthentication(this IServiceCollection services)
         {
-            services.AddHttpClient<ISpotifyUserClient, SpotifyUserClient>(client => {
-                client.BaseAddress = new Uri($"{options.SpotifyV1Url}/me");
-            })
-            .AddHttpMessageHandler<LoggingDelegatingHandler>();
+            services.AddAuthentication()
+                .AddScheme<SpotifyAuthenticationSchemeOptions, SpotifyAuthenticationHandler>(
+                    SpotifyAuthenticationDefaults.AuthenticationScheme,
+                    options => {}
+            );
 
+            services.AddAuthorizationBuilder()
+                .AddPolicy(SpotifyAuthenticationCustomPolicies.SpotifyUser, policy => {
+                    policy.RequireClaim(SpotifyAuthenticationCustomClaims.SpotifyAccessToken);
+                    policy.RequireClaim(SpotifyAuthenticationCustomClaims.SpotifyUserEntityId);
+            });
+
+            return services;
+        }
+
+        private static IServiceCollection AddSpotifyHttpClients(this IServiceCollection services, SpotifyOptions options) 
+        {
             services.AddHttpClient<ISpotifyPlaylistClient, SpotifyPlaylistClient>(client => {
                 client.BaseAddress = new Uri($"{options!.SpotifyV1Url}");
             })
-            .AddHttpMessageHandler<LoggingDelegatingHandler>();
+            .AddHttpMessageHandler<LoggingDelegatingHandler>()
+            .AddHttpMessageHandler<SpotifyUserAccessTokenHandler>();
 
              services.AddHttpClient<ISpotifyTrackClient, SpotifyTrackClient>(client => {
                 client.BaseAddress = new Uri($"{options!.SpotifyV1Url}/tracks");
             })
-            .AddHttpMessageHandler<LoggingDelegatingHandler>();
+            .AddHttpMessageHandler<LoggingDelegatingHandler>()
+            .AddHttpMessageHandler<SpotifyUserAccessTokenHandler>();
 
             services.AddHttpClient<ISpotifySearchClient, SpotifySearchClient>(client => {
                 client.BaseAddress = new Uri($"{options.SpotifyV1Url}/search");
             })
             .AddHttpMessageHandler<LoggingDelegatingHandler>()
             .AddHttpMessageHandler<SpotifyClientCredentialsHandler>();
+
+            //TODO: Move SpotifyUserClient into SpotifyAuthProvider
+            //TODO: rename SpotifyAuthProvider to SpotifyAuthServerClient
+            services.AddHttpClient<ISpotifyUserClient, SpotifyUserClient>(client => {
+                client.BaseAddress = new Uri($"{options.SpotifyV1Url}/me");
+            })
+            .AddHttpMessageHandler<LoggingDelegatingHandler>();
 
             services.AddHttpClient<ISpotifyAuthProvider, SpotifyAuthProvider>()
                 .AddHttpMessageHandler<LoggingDelegatingHandler>()

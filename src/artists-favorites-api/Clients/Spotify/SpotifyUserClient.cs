@@ -8,6 +8,7 @@ namespace artists_favorites_api.Clients.Spotify
         Task<SpotifyCurrentUserProfileResponse> GetCurrentUserProfileResponse(string accessToken);
     }
 
+    //Refactor: Make this an auth provider service method because this is also used in an Auth Handler
     public class SpotifyUserClient(
         HttpClient httpClient,
         ILogger<SpotifyUserClient> logger) : ISpotifyUserClient

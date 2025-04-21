@@ -1,5 +1,3 @@
-using artists_favorites_api.Authentication;
-using artists_favorites_api.Constants;
 using artists_favorites_api.Extensions;
 using artists_favorites_api.Middleware;
 using artists_favorites_api.Routes;
@@ -12,17 +10,7 @@ builder.Services.AddSpotifyServices(builder.Configuration);
 builder.Services.AddMemoryCache();
 builder.Services.AddCors();
 builder.Services.AddHttpContextAccessor();
-
-builder.Services.AddAuthentication()
-    .AddScheme<SpotifyAuthenticationSchemeOptions, SpotifyAuthenticationHandler>(
-        SpotifyAuthenticationDefaults.AuthenticationScheme,
-        options => {}
-);
-
-builder.Services.AddAuthorizationBuilder()
-    .AddPolicy(SpotifyAuthenticationCustomPolicies.SpotifyUser, policy => {
-        policy.RequireClaim(SpotifyAuthenticationCustomClaims.SpotifyAccessToken);
-});
+builder.Services.AddSpotifyAuthentication();
 
 var app = builder.Build();
 

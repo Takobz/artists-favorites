@@ -16,7 +16,7 @@ namespace artists_favorites_api.Services
     {
         public async Task<IEnumerable<GetSavedTrackResult>> GetUserSavedTracks(GetSavedTracksQuery query)
         {
-            var allSavedTracks = await spotifyTrackClient.GetUserSavedTracks(query.AccessToken);
+            var allSavedTracks = await spotifyTrackClient.GetUserSavedTracks();
             return allSavedTracks
                 .Where(st => st.Track.Artists.Any(a => ArtistIdIsList(query.ArtistEntityId, a)))
                 .Select(st => st.ToSavedTrackResult());

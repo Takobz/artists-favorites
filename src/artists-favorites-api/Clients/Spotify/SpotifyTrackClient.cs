@@ -8,21 +8,16 @@ namespace artists_favorites_api.Clients.Spotify
 {
     public interface ISpotifyTrackClient 
     {
-        Task<IEnumerable<SpotifySavedTrack>> GetUserSavedTracks(string accessToken);
+        Task<IEnumerable<SpotifySavedTrack>> GetUserSavedTracks();
     }
 
     public class SpotifyTrackClient(
         HttpClient httpClient,
         ILogger<SpotifyTrackClient> logger) : ISpotifyTrackClient
     {
-        public async Task<IEnumerable<SpotifySavedTrack>> GetUserSavedTracks(string accessToken)
+        public async Task<IEnumerable<SpotifySavedTrack>> GetUserSavedTracks()
         {
             List<SpotifySavedTrack> allSavedTracks = [];
-
-            httpClient.DefaultRequestHeaders.Remove("Authorization");
-            httpClient.DefaultRequestHeaders.Add("Authorization", $"Bearer {accessToken}");
-
-            //TODO: use query builder class
             HttpResponseMessage response =  await httpClient.GetAsync("me/tracks?offset=0&limit=50");
             while(response.IsSuccessStatusCode)
             {
