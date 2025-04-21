@@ -47,6 +47,7 @@ const ArtistCard = (props: IArtistCardProps) => {
 
             <MakePlaylistModal
                 artistName={props.artist.name} 
+                artistEntityId={props.artist.artistEntityId}
                 isOpen={isConfirmModalOpen}
                 onModalClose={() => setIsConfirmModalOpen(false)}
                 />

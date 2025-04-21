@@ -2,6 +2,8 @@ import { useState } from "react";
 import { Modal, Box, Button, Typography } from '@mui/material'
 import CircularProgress from '@mui/material/CircularProgress';
 import { ArtistsFavoritesApiService } from "../../services/ArtistsFavoritesApiService";
+import { LocalStorageService } from '../../services/LocalStorageService'
+import { WEB_APP_CONSTANTS } from "../../constants/webappconstants" 
 
 const style = {
     position: 'absolute',
@@ -19,6 +21,7 @@ const style = {
 
 interface MakePlaylistModalProps {
     artistName: string;
+    artistEntityId: string;
     isOpen: boolean;
     onModalClose: () => void;
 }
@@ -36,10 +39,24 @@ const MakePlaylistModal = (props: MakePlaylistModalProps) => {
         new ArtistsFavoritesApiService().initiateAuthorizeRequest()
             .then(response => {
                 if (response && response.spotifyAuthorizeUrl) {
+                    
+                    const storageService = new LocalStorageService();
+                    storageService.setItemIntoLocalStorage(
+                        WEB_APP_CONSTANTS.ArtistNameLocalStorageKey,
+                        props.artistName
+                    );
+
+                    storageService.setItemIntoLocalStorage(
+                        WEB_APP_CONSTANTS.ArtistSpotifyEntityIdLocalStorageKey,
+                        props.artistEntityId
+                    );
+                    
                     setIsAuthPending(false);
                     window.location.href = response.spotifyAuthorizeUrl;
                 } else {
-                    setModdalMessage("Failed to initiate authorize please try again")
+                    setModdalMessage("Failed to initiate authorize please try again");
+                    setDisableConfirmBtn(false);
+                    setIsAuthPending(false);
                 }
             }).catch(err => console.log(err));
     }
