@@ -1,15 +1,13 @@
 using artists_favorites_api.Models.DTOs.Requests;
 using artists_favorites_api.Extensions;
-using artists_favorites_api.Exceptions;
 using artists_favorites_api.Constants;
 using artists_favorites_api.Services;
-using System.Net;
 using artists_favorites_api.Models.ServiceModels.SpotifyServiceModels.Queries;
 using artists_favorites_api.Authentication;
 
 namespace artists_favorites_api.Routes 
 {
-    public static class SpotifyOpenAPIRoutes 
+    public static class SpotifyOpenAPIV1Routes 
     {
         //TODO: Describe known Responses and Status with OpenAPI Swagger.
         public static IEndpointRouteBuilder MapSpotifyV1Routes(this IEndpointRouteBuilder routeBuilder) 
@@ -51,7 +49,6 @@ namespace artists_favorites_api.Routes
             .WithName("AddTracksToPlaylist")
             .WithOpenApi();
 
-            //TODO: Add authentication handler that extracts the bearer token
             routeBuilder.MapGet("v1/playlist/liked/{artistEntityId}", async (
                 string artistEntityId,
                 ISpotifyTrackService spotifyTrackService
@@ -65,30 +62,6 @@ namespace artists_favorites_api.Routes
             })
             .RequireAuthorization(SpotifyAuthenticationCustomPolicies.SpotifyUser)
             .WithName("GetLikedSongsByArtist")
-            .WithOpenApi();
-
-            return routeBuilder;
-        }
-
-        public static IEndpointRouteBuilder MapSpotifyAuthRoutes(this IEndpointRouteBuilder routeBuilder)
-        {
-            routeBuilder.MapGet("initiate-authorize", async (ISpotifyAuthProvider authProvider) => 
-            {
-                var scopes = SpotifyUserAuthorizationScopes.CreateFavoritesPlaylistSpotifyScopes();
-                var response = await authProvider.InitiateAuthorizationRequest(scopes);
-                return Results.Ok(response);
-            })
-            .WithName("InitiateAuthorize")
-            .WithOpenApi();
-
-            routeBuilder.MapPost("/spotify-user-token", async (
-                GetUserTokenRequestDTO body,
-                ISpotifyAuthProvider authProvider) => 
-            {
-                var accessTokenResponse = await authProvider.GetAuthorizationCodeAccessToken(body.AuthorizationCode); 
-                return Results.Ok(accessTokenResponse.ToGetUserTokenResponseDTO());
-            })
-            .WithName("SpotifyAccessToken")
             .WithOpenApi();
 
             return routeBuilder;
